@@ -1,10 +1,12 @@
 <script setup>
 import UserCard from '@/components/start/UserCard.vue';
-
-
 </script>
 
 <template>
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
     <div id="startViewWrap">
         <div class="startLogo">
             <img src="../assets/startLogo.png" alt="startLogo">
