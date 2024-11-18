@@ -4,6 +4,7 @@ import MainView from "./views/MainView.vue";
 import StartView from "./views/StartView.vue";
 import BoardListView from "./views/BoardListView.vue";
 import Pagination from "./components/pagination/Pagination.vue";
+import Editor from "./components/editor/Editor.vue";
 </script>
 
 <!-- 1920 X 1080 해상도 기준 -->
@@ -12,8 +13,9 @@ import Pagination from "./components/pagination/Pagination.vue";
     <!-- <StartView /> -->
     <!-- <Header />
     <MainView />-->
-    <BoardListView /> 
-    <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" />
+    <!-- <BoardListView /> 
+    <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
+    <Editor/>
   </div>
 </template>
 
