@@ -1,5 +1,6 @@
 <script setup>
 import Header from './components/header/Header.vue';
+import MainView from './views/MainView.vue';
 import StartView from './views/StartView.vue';
 </script>
 
@@ -8,6 +9,7 @@ import StartView from './views/StartView.vue';
     <div id="wrap">
         <!-- <StartView /> -->
         <Header/>
+        <MainView/>
     </div>
 </template>
 
