@@ -20,7 +20,7 @@ import UserCard from '@/components/start/UserCard.vue';
 
 <style scoped>
     #startViewWrap {
-        padding-top: 50px;
+        padding-top: 100px;
         width: 1920px;
         display: flex;
         justify-content: center;
@@ -34,7 +34,7 @@ import UserCard from '@/components/start/UserCard.vue';
         align-items: center;
     }
     .startLogo > img {
-        width: 700px;
+        width: 30%;
     }
     .background {
         padding-top: 100px;
@@ -44,6 +44,6 @@ import UserCard from '@/components/start/UserCard.vue';
         align-items: center;
     }
     .background > img {
-        width: 100%;
+        width: 60%;
     }
 </style>

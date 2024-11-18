@@ -221,8 +221,10 @@ onMounted(() => {
 
         <!-- 로그인 -->
         <div class="loginInputBox" v-if="selectOption == 0">
-            <input type="text" placeholder="아이디" v-model.lazy="id">
-            <input type="password" placeholder="비밀번호" v-model.lazy="password">
+            
+                <input type="text" placeholder="아이디" v-model.lazy="id">
+                <input type="password" placeholder="비밀번호" v-model.lazy="password">
+            
             <div class="rememberBox">
                 <input type="checkbox" id="remember" :class="{ 'checked': rememberId }" v-model="rememberId"/>
                 <label for="remember">로그인 정보 기억하기</label>
@@ -373,21 +375,24 @@ onMounted(() => {
         opacity: 0.8;
     }
     .userTitle {
-        font-size: 80px;
+        font-size: 45px;
     }
     /* 로그인 */
     .loginInputBox {
+        width: 600px;
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        /* align-items: center; */
     }
     .loginInputBox > input {
         box-sizing: border-box;
         padding-left: 20px;
-        width: 800px;
-        height: 100px;
+        width: 600px;
+        height: 70px;
         border: none;
         border-radius: 9px;
-        font-size: 30px;
+        font-size: 20px;
         margin-bottom: 25px;
     }
     .rememberBox {
@@ -410,26 +415,26 @@ onMounted(() => {
     }
     [type="checkbox"]::before {
         content: '✔';
-        font-size: 30px;
+        font-size: 20px;
         color: #E7E9EB;
     }
     .checked::before {
         color: #3EBEEE;
     }
     .rememberBox > label {
+        margin-left: 10px;
         cursor: pointer;
-        padding-top: 10px;
-        font-size: 25px;
+        font-size: 20px;
         font-weight: 600;
     }
     .loginSubmitButton {
         transition: all 0.3s;
         margin-bottom: 20px;
-        width: 800px;
-        height: 100px;
+        width: 600px;
+        height: 70px;
         border: none;
         border-radius: 9px;
-        font-size: 30px;
+        font-size: 25px;
         font-weight: 600;
         background-color: #3EBEEE;
         display: flex;
@@ -448,6 +453,9 @@ onMounted(() => {
         width: 800px;
         display: flex;
         flex-direction: column;
+    }
+    .goMainPageBox > h2 {
+        margin-bottom: 10px
     }
     .findId, .findPassword, .signUp, .login {
         cursor: pointer;
@@ -468,10 +476,10 @@ onMounted(() => {
     }
     .goMainPageButton {
         width: 100%;
-        height: 100px;
+        height: 70px;
         border: none;
         border-radius: 9px;
-        font-size: 30px;
+        font-size: 25px;
         font-weight: 600;
         background-color: #3EBEEE;
         display: flex;
@@ -491,21 +499,21 @@ onMounted(() => {
     .findIdInputBox > input {
         box-sizing: border-box;
         padding-left: 20px;
-        width: 800px;
-        height: 100px;
+        width: 600px;
+        height: 70px;
         border: none;
         border-radius: 9px;
-        font-size: 30px;
+        font-size: 25px;
         margin-bottom: 25px;
     }
     .findIdSubmitButton {
         transition: all 0.3s;
         margin-bottom: 20px;
-        width: 800px;
-        height: 100px;
+        width: 600px;
+        height: 70px;
         border: none;
         border-radius: 9px;
-        font-size: 30px;
+        font-size: 25px;
         font-weight: 600;
         background-color: #3EBEEE;
         display: flex;
@@ -525,21 +533,21 @@ onMounted(() => {
     .findPasswordInputBox > input {
         box-sizing: border-box;
         padding-left: 20px;
-        width: 800px;
-        height: 100px;
+        width: 600px;
+        height: 70px;
         border: none;
         border-radius: 9px;
-        font-size: 30px;
+        font-size: 25px;
         margin-bottom: 25px;
     }
     .findPasswordSubmitButton {
         transition: all 0.3s;
         margin-bottom: 20px;
-        width: 800px;
-        height: 100px;
+        width: 600px;
+        height: 70px;
         border: none;
         border-radius: 9px;
-        font-size: 30px;
+        font-size: 25px;
         font-weight: 600;
         background-color: #3EBEEE;
         display: flex;
@@ -552,31 +560,35 @@ onMounted(() => {
     }
     /* 회원가입 */
     .signUpInputBox {
-        width: 800px;
+        overflow: auto;
+        width: 600px;
         display: flex;
         flex-direction: column;
     }
     .signUpInputBox input {
         box-sizing: border-box;
         padding-left: 20px;
-        height: 100px;
+        width: 100%;
+        height: 70px;
         border: none;
         border-radius: 9px;
-        font-size: 30px;
+        font-size: 20px;
         margin-bottom: 25px;
     }
     .signUpInputBox button {
         transition: all 0.3s;
-        height: 100px;
+        width: 100%;
+        height: 70px;
         border: none;
         border-radius: 9px;
-        font-size: 30px;
+        font-size: 20px;
         font-weight: 600;
         background-color: #3EBEEE;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        flex-shrink: 0;
     }
     .signUpInputBox button:hover {
         opacity: 0.8;
@@ -599,13 +611,13 @@ onMounted(() => {
     .correctValidation {
         margin-bottom: 20px;
         font-weight: 600;
-        font-size: 25px;
+        font-size: 14px;
         color: green;
     }
     .wrongValidation {
         margin-bottom: 20px;
         font-weight: 600;
-        font-size: 25px;
+        font-size: 14px;
         color: red;
     }
     .signUpInputPasswordBox {

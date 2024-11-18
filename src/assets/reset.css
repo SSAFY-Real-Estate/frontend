@@ -1,6 +1,12 @@
+@font-face {
+    font-family: 'yeongdeokCrab';
+    src: url("../util/fonts/YeongdeokSnowCrab.ttf");
+}
+
 * {
     margin :0;
     padding: 0;
     text-decoration: none;
     list-style: none;
+    font-family: 'yeongdeokCrab';
 }
