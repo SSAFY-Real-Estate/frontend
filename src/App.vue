@@ -7,6 +7,7 @@ import Pagination from "./components/pagination/Pagination.vue";
 import BoardDetailView from "@/views/BoardDetailView.vue";
 import BoardWriteView from "./views/BoardWriteView.vue";
 import NoticeView from "./views/NoticeView.vue";
+import SearchBar from "./components/search/SearchBar.vue";
 </script>
 
 <!-- 1920 X 1080 해상도 기준 -->
@@ -18,7 +19,8 @@ import NoticeView from "./views/NoticeView.vue";
     <!-- <BoardListView />
     <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
     <!-- <BoardDetailView /> -->
-    <NoticeView />
+    <!-- <NoticeView /> -->
+    <SearchBar />
   </div>
 </template>
 
