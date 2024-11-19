@@ -5,6 +5,7 @@ import StartView from "./views/StartView.vue";
 import BoardListView from "./views/BoardListView.vue";
 import Pagination from "./components/pagination/Pagination.vue";
 import BoardDetailView from "@/views/BoardDetailView.vue";
+import BoardWriteView from "./views/BoardWriteView.vue";
 </script>
 
 <!-- 1920 X 1080 해상도 기준 -->
