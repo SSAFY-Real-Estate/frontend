@@ -14,6 +14,7 @@ input {
   border: none; /* 기본 테두리 제거 */
   outline: none; /* 포커스 시 기본 outline 제거 */
   font-size: 30px;
+  width: 1050px;
 }
 .searchBar {
   display: flex;
