@@ -4,16 +4,18 @@ import MainView from "./views/MainView.vue";
 import StartView from "./views/StartView.vue";
 import BoardListView from "./views/BoardListView.vue";
 import Pagination from "./components/pagination/Pagination.vue";
+import BoardDetailView from "@/views/BoardDetailView.vue";
 </script>
 
 <!-- 1920 X 1080 해상도 기준 -->
 <template>
   <div id="wrap">
     <!-- <StartView /> -->
-    <!-- <Header />
-    <MainView />-->
-    <BoardListView /> 
-    <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" />
+    <Header />
+    <!-- <MainView /> -->
+    <!-- <BoardListView />
+    <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
+    <BoardDetailView />
   </div>
 </template>
 
