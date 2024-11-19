@@ -8,7 +8,7 @@ import { useKakao } from "vue3-kakao-maps/@utils";
 import App from "./App.vue";
 import router from "./router";
 
-const appkey = "app key";
+const appkey = import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY;
 useKakao(appkey);
 
 const app = createApp(App);
