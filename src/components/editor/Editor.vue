@@ -1,4 +1,5 @@
 <script setup>
+import { imgRegex } from '@/constants/firebaseRegex';
 import { QUILL_MODULES } from '@/constants/quillModules.';
 import { reactive, watch } from 'vue';
 import { quillEditor } from 'vue3-quill';
@@ -20,6 +21,11 @@ const onEditorChange = ({ quill, html, text }) => {
 
 watch(() => state._content, (newContent) => {
     console.log(newContent);
+    const result = newContent.match(imgRegex); // 모든 매칭 결과 배열로 반환
+    // console.log(result.length);
+    console.log(typeof(state._content))
+    console.log(state._content.match(imgRegex))
+    
 })
 
 </script>
