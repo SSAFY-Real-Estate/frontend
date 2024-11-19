@@ -4,10 +4,12 @@
   <!-- profile -->
   <div class="BoardCard">
     <div class="profileImg">
-      <div><img src="../../assets/houseLogo.png" width="50px" height="50px"/></div> 
+      <div>
+        <img src="../../assets/houseLogo.png" width="50px" height="50px" />
+      </div>
     </div>
 
-  <!-- content -->
+    <!-- content -->
     <div class="content">
       <div class="content_child">
         <div class="content_child_title"><h4>제목입니다.</h4></div>
@@ -15,8 +17,8 @@
         <div class="content_child_date">날짜 입니다.</div>
       </div>
     </div>
-  
-  <!--like -->
+
+    <!--like -->
     <div class="like">
       <div class="like_profile">
         <div class="like_profile_picture"></div>
@@ -25,7 +27,9 @@
       </div>
 
       <div class="like_like">
-        <div class="like_like_img"><img src="../../assets/houseLogo.png" width="10px" height="10px"></div>
+        <div class="like_like_img">
+          <img src="../../assets/houseLogo.png" width="10px" height="10px" />
+        </div>
         <div class="like_like_count">123</div>
       </div>
     </div>
@@ -40,37 +44,36 @@
   height: 272px;
   border: 2px solid black;
 }
-.like{
+.like {
   padding: 10px;
   box-sizing: border-box;
   height: 15%;
   display: flex;
   justify-content: space-between;
-
 }
-.like_like{
+.like_like {
   height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.like_like_img{
+.like_like_img {
   margin-right: 5px;
 }
-.like_profile{
+.like_profile {
   height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.like_profile_by{
+.like_profile_by {
   margin: 3px;
 }
-.like_profile_picture{
+.like_profile_picture {
   box-sizing: border-box;
   width: 30px;
   height: 30px;
-  border: 1px solid black;;
+  border: 1px solid black;
   border-radius: 50%;
 }
 

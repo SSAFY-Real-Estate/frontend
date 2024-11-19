@@ -19,7 +19,8 @@
     "quill": "^2.0.2",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
-    "vue3-quill": "^0.3.1"
+    "vue3-quill": "^0.3.1",
+    "vue3-kakao-maps": "^2.3.10"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
