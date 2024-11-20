@@ -10,6 +10,7 @@ import BoardWriteView from "./views/BoardWriteView.vue";
 import NoticeView from "./views/NoticeView.vue";
 import SearchBar from "./components/search/SearchBar.vue";
 import MapView from "./views/MapView.vue";
+import test from "./views/test.vue";
 </script>
 
 <!-- 1920 X 1080 해상도 기준 -->
@@ -20,7 +21,7 @@ import MapView from "./views/MapView.vue";
     <MainView />-->
     <!-- <BoardListView /> 
     <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
-    <Editor />
+    <!-- <Editor /> -->
     <!-- <Header />
     <MainView /> -->
     <!-- <BoardListView />
@@ -28,7 +29,8 @@ import MapView from "./views/MapView.vue";
     <!-- <BoardDetailView /> -->
     <!-- <NoticeView /> -->
     <!-- <SearchBar /> -->
-    <!-- <MapView /> -->
+    <MapView />
+    <!-- <test /> -->
   </div>
 </template>
 
