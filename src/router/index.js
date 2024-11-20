@@ -1,3 +1,4 @@
+import MainView from '@/views/MainView.vue'
 import StartView from '@/views/StartView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -9,6 +10,11 @@ const router = createRouter({
       name: 'start',
       component: StartView,
     },
+    {
+      path: '/main',
+      name: 'main',
+      component: MainView,
+    }
     // {
     //   path: '/about',
     //   name: 'about',

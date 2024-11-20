@@ -10,25 +10,30 @@ import BoardWriteView from "./views/BoardWriteView.vue";
 import NoticeView from "./views/NoticeView.vue";
 import SearchBar from "./components/search/SearchBar.vue";
 import MapView from "./views/MapView.vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 </script>
 
 <!-- 1920 X 1080 해상도 기준 -->
 <template>
   <div id="wrap">
+    <Header v-if="route.path !== '/'"/>
     <!-- <StartView /> -->
-    <!-- <Header />
-    <MainView />-->
+    <!-- <Header /> -->
+    <!-- <MainView /> -->
     <!-- <BoardListView />  -->
     <!-- <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
     <!-- <Editor /> -->
-    <Header />
+    <!-- <Header /> -->
     <!-- <MainView /> -->
     <!-- <BoardListView />
     <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
-    <BoardDetailView />
+    <!-- <BoardDetailView /> -->
     <!-- <NoticeView /> -->
     <!-- <SearchBar /> -->
     <!-- <MapView /> -->
+    <RouterView  />
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import getServerAddress, { LOCAl_ADDRESS } from "@/constants/serverAddress";
+import getServerAddress from "@/constants/serverAddress";
 
 export const instance = axios.create({
     baseURL: "http://" + getServerAddress()

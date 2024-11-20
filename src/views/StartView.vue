@@ -1,14 +1,18 @@
 <script setup>
 import UserCard from '@/components/start/UserCard.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 </script>
 
 <template>
     <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-  />
+    />
     <div id="startViewWrap">
-        <div class="startLogo">
+        <div class="startLogo" @click="router.push({name : 'main'})">
             <img src="../assets/startLogo.png" alt="startLogo">
         </div>
         <div class="background">
@@ -32,6 +36,7 @@ import UserCard from '@/components/start/UserCard.vue';
         display: flex;
         justify-content: center;
         align-items: center;
+        cursor: pointer;
     }
     .startLogo > img {
         width: 30%;

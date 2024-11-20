@@ -1,6 +1,10 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { REGEX } from '@/constants/regex';
+import { useRouter } from 'vue-router';
+import { checkIdDuplicatedApi, checkNicknameDuplicatedApi, findIdByEmailApi, findPasswordByIdAndEmailApi } from '@/apis/user/user';
+
+const router = useRouter();
 
 const option = ['로그인', '아이디 찾기', '비밀번호 찾기', '회원가입'];
 const selectOption = ref(0); // 0: 로그인, 1: 아이디 찾기, 2: 비밀번호 찾기, 3:회원가입 
@@ -96,13 +100,56 @@ watch(findIdByEmail, () => {
     console.log(findIdByEmail.value)
 })
 
+const findIdByEmailClick = async() => {
+    if(!findIdByEmail.value) {
+        alert("이메일을 입력하세요.");
+        return;
+    }
+
+    try {
+        const response = await findIdByEmailApi(findIdByEmail.value);
+        if(!response) {
+            alert('해당하는 이메일의 아이디가 존재하지 않습니다.')
+        } else {
+            alert(`아이디는: ${response} 입니다.`);
+        }
+    } catch (error) {
+        alert(`오류가 발생하였습니다. 해당 서비스를 다시 이용해 주세요`);
+    }
+}
+
+const findByEmailEnter = (event) => {
+    if(event.key === 'Enter') findIdByEmailClick();
+}
+
 // 2: 비밀번호 찾기
 const findPasswordById = ref('');
 const findPasswordByEmail = ref('');
-watch((findPasswordById, findPasswordById), () => {
-    console.log('findPasswordById : ' + findPasswordById.value)
-    console.log('findPasswordByEmail : ' + findPasswordByEmail.value)
-})
+
+const findPasswordByIdAndEmailClick = async() => {
+    if(!findPasswordById.value || !findPasswordByEmail.value) {
+        alert('아이디와 이메일을 올바르게 입력해주세요.');
+        findPasswordById.value = '';
+        findPasswordByEmail.value = '';
+        return;
+    }
+
+    try {
+        const response = await findPasswordByIdAndEmailApi({
+            id: findPasswordById.value,
+            email: findPasswordByEmail.value
+        })
+        alert(response);
+        findPasswordById.value = '';
+        findPasswordByEmail.value = '';
+    } catch (error) {
+        alert(`오류가 발생하였습니다. 해당 서비스를 다시 이용해 주세요`);
+    }
+}
+
+const findPasswordByIdAndEmailEnter = (event) => {
+    if(event.key === 'Enter') findPasswordByIdAndEmailClick();
+}
 
 // 3: 회원가입
 const signUpId = ref('');
@@ -139,6 +186,33 @@ const idValidation = () => {
 watch(signUpId, () => {
     idValidation()
 })
+
+const duplicateIdClick = async() => {
+    if(!idValidationFlag.value) {
+        alert('유효하지 않은 아이디입니다.');
+        signUpId.value = '';
+        return;
+    }else if(!signUpId.value) {
+        alert('아이디를 입력해주세요.');
+        return;
+    }
+
+    try {
+        const response = await checkIdDuplicatedApi(signUpId.value);
+        if(!response) {
+            alert('사용가능한 아이디입니다.');
+        }else {
+            alert('유효하지 않은 아이디입니다. 다시 입력해주세요.');
+            signUpId.value = '';
+        }
+    } catch (error) {
+        alert(`오류가 발생하였습니다. 해당 서비스를 다시 이용해 주세요`);
+    }
+}
+
+const duplicateIdEnter = (event) => {
+    if(event.key === 'Enter') findPasswordByIdAndEmailClick();
+}
 
 const passwordValidation = () => {
     if(signUpPassword.value) {
@@ -199,6 +273,33 @@ watch(signUpNickname, () => {
     nicknameValidation()
 })
 
+const nicknameValidationClick = async() => {
+    if(!signUpNickname.value) {
+        alert('유효하지 않은 닉네임입니다.');
+        // signUpNickname.value = '';
+        return;
+    }else if(!signUpNickname.value) {
+        alert('닉네임을 입력해주세요');
+        return;
+    }
+
+    try {
+        const response = await checkNicknameDuplicatedApi(signUpNickname.value);
+        if(!response) {
+            alert('사용가능한 닉네임입니다.');
+        }else {
+            alert('이미 존재하는 닉네임입니다. 다른 닉네임을 입력해주세요.');
+            signUpNickname.value = '';
+        }
+    } catch (error) {
+        alert(`오류가 발생하였습니다. 해당 서비스를 다시 이용해 주세요`);
+    }
+}
+
+const nicknameValidationEnter = (event) => {
+    if(event.key === 'Enter') nicknameValidationClick();
+}
+
 // 초기화 로직
 onMounted(() => {
     const savedId = localStorage.getItem('id');
@@ -234,23 +335,23 @@ onMounted(() => {
 
         <!-- 아이디 찾기 -->
         <div class="findIdInputBox" v-if="selectOption == 1">
-            <input type="text" placeholder="이메일" v-model.lazy="findIdByEmail"/>
-            <button class="findIdSubmitButton">아이디 찾기</button>
+            <input type="text" placeholder="이메일" v-model="findIdByEmail" @keydown="findByEmailEnter"/>
+            <button class="findIdSubmitButton" @click="findIdByEmailClick">아이디 찾기</button>
         </div>
 
         <!-- 비밀번호 찾기 -->
         <div class="findPasswordInputBox" v-if="selectOption == 2">
             <input type="text" placeholder="아이디" v-model.lazy="findPasswordById">
-            <input type="text" placeholder="이메일" v-model.lazy="findPasswordByEmail">
-            <button class="findPasswordSubmitButton">비밀번호 찾기</button>
+            <input type="text" placeholder="이메일" v-model="findPasswordByEmail" @keydown="findPasswordByIdAndEmailEnter">
+            <button class="findPasswordSubmitButton" @click="findPasswordByIdAndEmailClick">비밀번호 찾기</button>
         </div>
 
         <!-- 회원가입 -->
         <div class="signUpInputBox" v-if="selectOption == 3">
             <div class="signUpInputIdBox">
                 <div>
-                    <input type="text" placeholder="아이디" v-model.lazy="signUpId">
-                    <button class="duplicateIdSubmitButton">중복 확인</button>
+                    <input type="text" placeholder="아이디" v-model="signUpId" @keydown="duplicateIdEnter">
+                    <button class="duplicateIdSubmitButton" @click="duplicateIdClick">중복 확인</button>
                 </div>
                 <p :class="idValidationFlag ? 'correctValidation' : 'wrongValidation'" v-if="signUpId">{{ validationMessage.idValidation }}</p>
             </div>
@@ -266,8 +367,8 @@ onMounted(() => {
             
             <div class="signUpInputNicknameBox">
                 <div>
-                    <input type="text" placeholder="닉네임" v-model.lazy="signUpNickname">
-                    <button class="duplicateNicknameSubmitButton">중복 확인</button>
+                    <input type="text" placeholder="닉네임" v-model="signUpNickname" @keydown="nicknameValidationEnter">
+                    <button class="duplicateNicknameSubmitButton" @click="nicknameValidationClick">중복 확인</button>
                 </div>
                 <p :class="nicknameValidationFlag ? 'correctValidation' : 'wrongValidation'" v-if="signUpNickname">{{ validationMessage.nicknameValidation }}</p>
             </div>
@@ -315,7 +416,7 @@ onMounted(() => {
 
         <div class="goMainPageBox">
             <h2>로그인 없는 서비스 이용</h2>
-            <button class="goMainPageButton">메인페이지 바로가기</button>
+            <button class="goMainPageButton" @click="router.push({ name : 'main'})">메인페이지 바로가기</button>
         </div>
         <p class="copyRight">project Copyright &copy; 부울경 03 All Rights Reserved.</p>
     </div>
