@@ -5,7 +5,7 @@
     <div class="title">차니핑 투자 법으로 부동산 재벌된 썰 푼다.</div>
 
     <div class="updateAndDate">
-      <div class="updateAndDate_date">2024년 11월 19일</div>
+      <div class="updateAndDate_date">2024년 11월 19일 + 닉네임</div>
 
       <div class="updatgeAndDte_update">
         <button class="updatgeAndDte_update_update">수정</button>
@@ -41,7 +41,19 @@
         <button class="commentWrite_button_button">댓글작성</button>
       </div>
     </div>
-    <div></div>
+    <div class="sideBar">
+      <div class="sideBarHeart">
+        <div><i class="fa-solid fa-heart"></i></div>
+        <div class="sideBarHeartCount">123</div>
+      </div>
+      <div class="sideBarComment">
+        <div><i class="fa-solid fa-comment"></i></div>
+        <div class="sideBarCount">123</div>
+      </div>
+      <div class="sideBarBookMark">
+        <div><i class="fa-solid fa-bookmark"></i></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -51,6 +63,8 @@ input {
   outline: none; /* 포커스 시 기본 outline 제거 */
 }
 .boardSearch {
+  position: relative;
+  padding-top: 50px;
   width: 1200px;
   height: 100%;
 }
@@ -58,7 +72,8 @@ input {
   box-sizing: border-box;
   width: 100%;
   font-size: 50px;
-  border-bottom: 3px solid black;
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
 }
 .commentWrite {
   width: 100%;
@@ -121,7 +136,7 @@ input {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 5px;
+  margin-top: 10px;
 }
 
 .updateAndDate_date {
@@ -140,21 +155,119 @@ input {
   font-size: 30px;
   width: 100px;
   height: 50px;
-  border-radius: 10px;
+  border-radius: 9px;
+  box-sizing: border-box;
+  padding-top: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
-
+.updatgeAndDte_update_update:hover {
+  opacity: 0.8;
+}
 .updatgeAndDte_update_delete {
   background-color: #3ebeee;
   border: none; /* 기본 테두리 제거 */
   font-size: 30px;
   width: 100px;
   height: 50px;
-  border-radius: 10px;
+  border-radius: 9px;
+  box-sizing: border-box;
+  padding-top: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.updatgeAndDte_update_delete:hover {
+  opacity: 0.8;
+}
+.content {
+  box-sizing: border-box;
+  padding-top: 30px;
+  font-size: 20px;
+  min-height: 500px;
 }
 
-.content {
-  margin-top: 10px;
-  font-size: 20px;
-  height: 700px;
+.sideBar {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  box-shadow: inset;
+  position: fixed;
+  top: 30%;
+  left: 10%;
+  width: 80px;
+  height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+  border-bottom-left-radius: 50px;
+  border-bottom-right-radius: 50px;
+  gap: 10px;
 }
+
+.sideBarHeart {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: inset;
+  box-sizing: border-box;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.sideBarHeartCount {
+  font-size: 12px;
+}
+
+.sideBarComment {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: inset;
+  box-sizing: border-box;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.sideBarCount {
+  font-size: 12px;
+}
+
+.sideBarBookMark {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: inset;
+  box-sizing: border-box;
+  padding-top: 10px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.sideBarHeart:hover, .sideBarComment:hover, .sideBarBookMark:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
 </style>
