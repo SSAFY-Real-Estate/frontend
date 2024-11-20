@@ -37,3 +37,15 @@ export const checkNicknameDuplicatedApi = async (nickname) => {
     })
     return response.data;
 }
+
+// 회원가입
+export const signUpApi = async (data) => {
+    const response = await instance.post('/user/signup', data);
+    return response.data;
+}
+
+// 로그인
+export const signInApi = async (data) => {
+    const response = await instance.post('/user/signin', data);
+    return response.data;
+}

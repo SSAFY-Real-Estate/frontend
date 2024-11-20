@@ -2,15 +2,14 @@
 import { onMounted, ref, watch } from 'vue';
 import { REGEX } from '@/constants/regex';
 import { useRouter } from 'vue-router';
-import { checkIdDuplicatedApi, checkNicknameDuplicatedApi, findIdByEmailApi, findPasswordByIdAndEmailApi } from '@/apis/user/user';
+import { checkIdDuplicatedApi, checkNicknameDuplicatedApi, findIdByEmailApi, findPasswordByIdAndEmailApi, signInApi, signUpApi } from '@/apis/user/user';
+// import { refStorage } from 'firebase/storage';
+import { storage } from '@/apis/firebase/firebaseConfig';
 
 const router = useRouter();
 
 const option = ['로그인', '아이디 찾기', '비밀번호 찾기', '회원가입'];
 const selectOption = ref(0); // 0: 로그인, 1: 아이디 찾기, 2: 비밀번호 찾기, 3:회원가입 
-watch(selectOption, () => {
-    console.log(selectOption.value);
-})
 
 const userCardPosition = ref('-960px');
 const moveUserCard = () => {
@@ -94,6 +93,37 @@ watch(rememberId, () => {
     }
 })
 
+const signInClick = async() => {
+    if(!id.value || !password.value) {
+        alert('아이디와 비밀번호를 모두 작성해주세요.')
+        return;
+    }
+    try {
+        const response = await signInApi({
+            id: id.value,
+            password: password.value
+        })
+        if(!response) {
+            alert('로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.');
+            id.value = '';
+            password.value = '';
+            return;
+        }else {
+            const accessToken = response;
+            localStorage.setItem("AccessToken", accessToken);
+            alert('로그인이 완료되었습니다. 메인 페이지로 이동합니다.');
+            router.push({name: 'main'});
+        }
+    } catch (error) {
+        alert(`오류가 발생하였습니다. 해당 서비스를 다시 이용해 주세요`);
+    }
+}
+
+const signInEnter = (event) => {
+    if(event.key === 'Enter') signInClick();
+}
+
+
 // 1: 아이디 찾기
 const findIdByEmail = ref('');
 watch(findIdByEmail, () => {
@@ -110,8 +140,12 @@ const findIdByEmailClick = async() => {
         const response = await findIdByEmailApi(findIdByEmail.value);
         if(!response) {
             alert('해당하는 이메일의 아이디가 존재하지 않습니다.')
+            findIdByEmail.value = '';
+            return;
         } else {
             alert(`아이디는: ${response} 입니다.`);
+            findIdByEmail.value = '';
+            selectOption.value = 0;
         }
     } catch (error) {
         alert(`오류가 발생하였습니다. 해당 서비스를 다시 이용해 주세요`);
@@ -194,6 +228,7 @@ const duplicateIdClick = async() => {
         return;
     }else if(!signUpId.value) {
         alert('아이디를 입력해주세요.');
+        idValidationFlag.value = false;
         return;
     }
 
@@ -202,8 +237,9 @@ const duplicateIdClick = async() => {
         if(!response) {
             alert('사용가능한 아이디입니다.');
         }else {
-            alert('유효하지 않은 아이디입니다. 다시 입력해주세요.');
+            alert('이미 존재하는 아이디입니다. 다른 아이디로 다시 입력해주세요.');
             signUpId.value = '';
+            idValidationFlag.value = false;
         }
     } catch (error) {
         alert(`오류가 발생하였습니다. 해당 서비스를 다시 이용해 주세요`);
@@ -211,7 +247,7 @@ const duplicateIdClick = async() => {
 }
 
 const duplicateIdEnter = (event) => {
-    if(event.key === 'Enter') findPasswordByIdAndEmailClick();
+    if(event.key === 'Enter') duplicateIdClick();
 }
 
 const passwordValidation = () => {
@@ -234,7 +270,6 @@ const passwordValidation = () => {
             }
         }
     }
-    console.log(passwordValidationFlag.value)
 }
 
 watch([signUpPassword, signUpPasswordCheck], () => {
@@ -276,10 +311,12 @@ watch(signUpNickname, () => {
 const nicknameValidationClick = async() => {
     if(!signUpNickname.value) {
         alert('유효하지 않은 닉네임입니다.');
-        // signUpNickname.value = '';
+        signUpNickname.value = '';
+        nicknameValidationFlag.value = false;
         return;
     }else if(!signUpNickname.value) {
         alert('닉네임을 입력해주세요');
+        nicknameValidationFlag.value = false;
         return;
     }
 
@@ -287,9 +324,11 @@ const nicknameValidationClick = async() => {
         const response = await checkNicknameDuplicatedApi(signUpNickname.value);
         if(!response) {
             alert('사용가능한 닉네임입니다.');
+            nicknameValidationFlag.value = true;
         }else {
             alert('이미 존재하는 닉네임입니다. 다른 닉네임을 입력해주세요.');
             signUpNickname.value = '';
+            nicknameValidationFlag.value = false;
         }
     } catch (error) {
         alert(`오류가 발생하였습니다. 해당 서비스를 다시 이용해 주세요`);
@@ -299,6 +338,61 @@ const nicknameValidationClick = async() => {
 const nicknameValidationEnter = (event) => {
     if(event.key === 'Enter') nicknameValidationClick();
 }
+
+const signUpClick = async() => {
+    const flag = idValidationFlag.value && passwordValidationFlag.value && emailValidationFlag.value && nicknameValidationFlag.value;
+    if(flag) {
+        const response = await signUpApi({
+            id : signUpId.value,
+            password : signUpPassword.value,
+            email : signUpEmail.value,
+            nickname : signUpNickname.value,
+            profileImgUrl : signUpProfileImg.value
+        });
+        selectOption.value = 0;
+        signUpId.value = '';
+        signUpPassword.value = '';
+        signUpPasswordCheck.value = '';
+        signUpEmail.value = '';
+        signUpNickname.value = '';
+        signUpProfileImg.value = '';
+    }else {
+        alert('유효하지 않은 회원가입 양식입니다. 다시 입력해주세요.');
+        signUpId.value = '';
+        signUpPassword.value = '';
+        signUpPasswordCheck.value = '';
+        signUpEmail.value = '';
+        signUpNickname.value = '';
+        signUpProfileImg.value = '';
+        return;
+    }
+}
+
+watch(signUpProfileImg, () => {
+    console.log(signUpProfileImg.value);
+})
+
+// 파이어베이스 프로필 이미지 업로드
+// const firebaseStorage = refStorage(storage); // 파이어베이스 스토리지 연동 연결
+
+// const handleFileChange = (e) => {
+//     const files = Array.from(e.target.files);
+
+//     if(!files.length == 0) {
+//         return;
+//     }
+
+//     const file = files[0];
+
+//     const fileReader = new FileReader();
+
+//     fileReader.onload = (e) => {
+//         signUpProfileImg.value = e.target.result;
+//     }
+
+//     fileReader.readAsDataURL(file);
+// }
+
 
 // 초기화 로직
 onMounted(() => {
@@ -323,26 +417,26 @@ onMounted(() => {
         <!-- 로그인 -->
         <div class="loginInputBox" v-if="selectOption == 0">
             
-                <input type="text" placeholder="아이디" v-model.lazy="id">
-                <input type="password" placeholder="비밀번호" v-model.lazy="password">
+                <input type="text" placeholder="아이디" v-model="id">
+                <input type="password" placeholder="비밀번호" v-model="password" @keyup="signInEnter">
             
             <div class="rememberBox">
                 <input type="checkbox" id="remember" :class="{ 'checked': rememberId }" v-model="rememberId"/>
                 <label for="remember">로그인 정보 기억하기</label>
             </div>
-            <button class="loginSubmitButton">로그인</button>
+            <button class="loginSubmitButton" @click="signInClick">로그인</button>
         </div>
 
         <!-- 아이디 찾기 -->
         <div class="findIdInputBox" v-if="selectOption == 1">
-            <input type="text" placeholder="이메일" v-model="findIdByEmail" @keydown="findByEmailEnter"/>
+            <input type="text" placeholder="이메일" v-model="findIdByEmail" @keyup="findByEmailEnter"/>
             <button class="findIdSubmitButton" @click="findIdByEmailClick">아이디 찾기</button>
         </div>
 
         <!-- 비밀번호 찾기 -->
         <div class="findPasswordInputBox" v-if="selectOption == 2">
             <input type="text" placeholder="아이디" v-model.lazy="findPasswordById">
-            <input type="text" placeholder="이메일" v-model="findPasswordByEmail" @keydown="findPasswordByIdAndEmailEnter">
+            <input type="text" placeholder="이메일" v-model="findPasswordByEmail" @keyup="findPasswordByIdAndEmailEnter">
             <button class="findPasswordSubmitButton" @click="findPasswordByIdAndEmailClick">비밀번호 찾기</button>
         </div>
 
@@ -350,7 +444,7 @@ onMounted(() => {
         <div class="signUpInputBox" v-if="selectOption == 3">
             <div class="signUpInputIdBox">
                 <div>
-                    <input type="text" placeholder="아이디" v-model="signUpId" @keydown="duplicateIdEnter">
+                    <input type="text" placeholder="아이디" v-model="signUpId" @keyup="duplicateIdEnter">
                     <button class="duplicateIdSubmitButton" @click="duplicateIdClick">중복 확인</button>
                 </div>
                 <p :class="idValidationFlag ? 'correctValidation' : 'wrongValidation'" v-if="signUpId">{{ validationMessage.idValidation }}</p>
@@ -367,17 +461,17 @@ onMounted(() => {
             
             <div class="signUpInputNicknameBox">
                 <div>
-                    <input type="text" placeholder="닉네임" v-model="signUpNickname" @keydown="nicknameValidationEnter">
+                    <input type="text" placeholder="닉네임" v-model="signUpNickname" @keyup="nicknameValidationEnter">
                     <button class="duplicateNicknameSubmitButton" @click="nicknameValidationClick">중복 확인</button>
                 </div>
                 <p :class="nicknameValidationFlag ? 'correctValidation' : 'wrongValidation'" v-if="signUpNickname">{{ validationMessage.nicknameValidation }}</p>
             </div>
             <div class="signUpInputProfileImgBox">
-                <input class="profileImgValue" value="첨부파일" placeholder="프로필 이미지">
+                <input class="profileImgValue" disabled value="첨부파일" placeholder="프로필 이미지">
                 <label for="file"></label>
                 <input type="file" id="profileImgfile">
             </div>
-            <button>회원가입</button>
+            <button @click="signUpClick">회원가입</button>
         </div>
 
         <div class="selectOption">
@@ -749,6 +843,7 @@ onMounted(() => {
     }
     .profileImgValue {
         width: 80%;
+        background-color: #ccc;
     }
     .copyRight {
         margin-top: 20px;

@@ -18,7 +18,7 @@ const route = useRoute();
 <!-- 1920 X 1080 해상도 기준 -->
 <template>
   <div id="wrap">
-    <Header v-if="route.path !== '/'"/>
+    <Header v-if="route.path !== '/'" />
     <!-- <StartView /> -->
     <!-- <Header /> -->
     <!-- <MainView /> -->
