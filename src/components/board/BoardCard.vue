@@ -14,7 +14,7 @@
       <div class="content_child">
         <div class="content_child_title"><h4>제목입니다.</h4></div>
         <div class="content_child_content">내용입니다.</div>
-        <div class="content_child_date">날짜 입니다.</div>
+        <div class="content_child_date">날짜 댓글수입니다.</div>
       </div>
     </div>
 
@@ -28,7 +28,7 @@
 
       <div class="like_like">
         <div class="like_like_img">
-          <img src="../../assets/houseLogo.png" width="10px" height="10px" />
+          <i class="fa-solid fa-heart"></i>
         </div>
         <div class="like_like_count">123</div>
       </div>
@@ -38,11 +38,18 @@
 
 <style scoped>
 .BoardCard {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: inset;
+  border: 1px solid #ddd;
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 9px;
   width: 272px;
   height: 272px;
-  border: 2px solid black;
+  cursor: pointer;
+}
+.BoardCard:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 .like {
   padding: 10px;
@@ -58,7 +65,9 @@
   align-items: center;
 }
 .like_like_img {
-  margin-right: 5px;
+  color: #3EBEEE ;
+  padding-top: 3px;
+  margin-right: 10px;
 }
 .like_profile {
   height: 100%;
@@ -67,41 +76,49 @@
   align-items: center;
 }
 .like_profile_by {
-  margin: 3px;
+  margin: 0px 5px;
+}
+.like_profile_text {
+  color: #3EBEEE ;
 }
 .like_profile_picture {
   box-sizing: border-box;
   width: 30px;
   height: 30px;
-  border: 1px solid black;
+  border: 1px solid #ddd;
   border-radius: 50%;
 }
 
 .content {
-  padding: 5px;
+  /* padding: 5px; */
   width: 100%;
   height: 40%;
   box-sizing: border-box;
-  border-bottom: 2px solid black;
+  border-bottom: 1px solid #ddd;
 }
 .content_child_title {
+  padding: 5px 10px;
   box-sizing: border-box;
   width: 100%;
   height: 30px;
+  font-size: 18px;
 }
 .content_child_content {
+  padding: 5px 10px;
   box-sizing: border-box;
   width: 100%;
-  height: 43px;
-  font-size: 10px;
+  height: 60px;
+  font-size: 16px;
 }
 
 .content_child_date {
   display: flex;
   align-items: center;
+  box-sizing: border-box;
+  padding: 5px 10px;
   width: 100%;
-  height: 20px;
-  font-size: 8px;
+  height: 10px;
+  font-size: 12px;
 }
 
 .profileImg {
@@ -109,7 +126,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  border-bottom: 2px solid black;
+  border-bottom: 1px solid #ddd;
   width: 100%;
   height: 45%;
 }

@@ -89,6 +89,7 @@ const changePage = (page) => {
 
 <style scoped>
 #paginationWrap {
+    margin-top: 20px;
     display: flex;
     justify-content: center;
 }

@@ -18,13 +18,13 @@ import MapView from "./views/MapView.vue";
     <!-- <StartView /> -->
     <!-- <Header />
     <MainView />-->
-    <!-- <BoardListView /> 
-    <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
-    <Editor />
-    <!-- <Header />
-    <MainView /> -->
-    <!-- <BoardListView />
-    <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
+    <!-- <BoardListView />  -->
+    <!-- <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
+    <!-- <Editor /> -->
+    <Header />
+    <!-- <MainView /> -->
+    <BoardListView />
+    <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" />
     <!-- <BoardDetailView /> -->
     <!-- <NoticeView /> -->
     <!-- <SearchBar /> -->
