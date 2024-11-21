@@ -13,6 +13,7 @@ import MapView from "./views/MapView.vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
+import test from "./views/test.vue";
 </script>
 
 <!-- 1920 X 1080 해상도 기준 -->
@@ -33,7 +34,7 @@ const route = useRoute();
     <!-- <NoticeView /> -->
     <!-- <SearchBar /> -->
     <!-- <MapView /> -->
-    <RouterView  />
+    <RouterView />
   </div>
 </template>
 

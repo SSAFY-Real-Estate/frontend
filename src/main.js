@@ -9,7 +9,7 @@ import App from "./App.vue";
 import router from "./router";
 
 const appkey = import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY;
-useKakao(appkey);
+useKakao(appkey, ["clusterer", "services", "drawing"]);
 
 const app = createApp(App);
 app.use(quillEditor);
