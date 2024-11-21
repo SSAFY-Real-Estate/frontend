@@ -11,9 +11,22 @@ import NoticeView from "./views/NoticeView.vue";
 import SearchBar from "./components/search/SearchBar.vue";
 import MapView from "./views/MapView.vue";
 import { useRoute } from "vue-router";
+import test from "./views/test.vue";
+import { usePrincipalStore } from "./stores/principal";
+import { computed, onMounted } from "vue";
+
 
 const route = useRoute();
-import test from "./views/test.vue";
+
+const principalStore = usePrincipalStore();
+const principal = computed(() => principalStore.principal);
+
+// 컴포넌트가 마운트될 때 fetchPrincipal() 호출
+onMounted(() => {
+  principalStore.fetchPrincipal();
+});
+
+console.log(principal)
 </script>
 
 <!-- 1920 X 1080 해상도 기준 -->

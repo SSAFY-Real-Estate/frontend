@@ -1,5 +1,7 @@
 <script setup>
-    
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 </script>
 <template>
     <div id="mainViewWrap">
@@ -60,7 +62,7 @@
                         <img src="../assets/myListLogo.png" alt="myListLogo">
                     </div>
                 </div>
-                <div class="putHouse">
+                <div class="putHouse" @click="router.push({name : 'puthouse'})">
                     <h1>방내놓기</h1>
                     <div class="putHouseBox">
                         <img src="../assets/putHouseLogo.png" alt="putHouseLogo">

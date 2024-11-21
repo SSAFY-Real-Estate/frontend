@@ -1,10 +1,12 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router'; // Vue Router 사용
-
+// Vue Router를 통해 페이지 이동
+const router = useRouter();
 const props = defineProps({
-    path: String, // URL (이제 사용하지 않음, Vue Router로 이동)
+    page: Number,
     option: Number, // 옵션: 0 - 최신순, 1 - 트렌딩
+    path: String, // URL (이제 사용하지 않음, Vue Router로 이동)
     count: { // 한 페이지에 보여줄 데이터 수
         type: Number,
         required: true,
@@ -14,18 +16,21 @@ const props = defineProps({
         type: Number,
         required: true,
         default: 0, // 기본값
-    },
+    }
 });
 
 // 현재 페이지(default: 1)
-const currentPageNumber = ref(1);
+const currentPageNumber = ref(props.page);
+console.log(currentPageNumber.value)
+watch(currentPageNumber, () => {
+    console.log(currentPageNumber.value);
+})
 
 // 총 페이지 수 계산 (props.count가 0이면 1로 처리)
 const pageCount = computed(() => {
     const totalPages = props.count > 0 ? Math.ceil(props.totalCount / props.count) : 1;
     return totalPages;
 });
-
 // 페이지 번호 배열 생성
 const pageNumbers = computed(() => {
     const pageGroupSize = 10; // 페이지 그룹 크기
@@ -40,8 +45,7 @@ const pageNumbers = computed(() => {
     return numbers;
 });
 
-// Vue Router를 통해 페이지 이동
-const router = useRouter();
+
 
 // 페이지 변경 함수
 const changePage = (page) => {

@@ -1,5 +1,7 @@
 import MainView from '@/views/MainView.vue'
+import PutHouseDetailView from '@/views/PutHouseDetailView.vue'
 import PutHouseListView from '@/views/PutHouseListView.vue'
+import PutHouseWrite from '@/views/PutHouseWrite.vue'
 import StartView from '@/views/StartView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -20,6 +22,17 @@ const router = createRouter({
       path: '/puthouse',
       name: 'puthouse',
       component: PutHouseListView,
+    },
+    {
+      path: '/puthouse/:puthouseid',
+      name: 'puthouseDetail',
+      component: PutHouseDetailView,
+      props: true
+    },
+    {
+      path: '/puthouse/posts',
+      name: 'puthousePosts',
+      component: PutHouseWrite
     }
     // {
     //   path: '/about',

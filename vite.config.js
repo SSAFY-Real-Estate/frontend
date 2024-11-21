@@ -18,5 +18,6 @@ export default defineConfig({
   base: '/home/',
   optimizeDeps: {
     include: ['quill'],  
-  }
+  },
 })
+

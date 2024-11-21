@@ -1,5 +1,7 @@
 <script setup>
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 </script>
 
 <template>
@@ -12,7 +14,7 @@
             <div class="navAdoptation">분양</div>
             <div class="navBoard">게시판</div>
             <div class="navKeep">찜</div>
-            <div class="navPutHouse">방내놓기</div>
+            <div class="navPutHouse" @click="router.push({name : 'puthouse'})">방내놓기</div>
             <div class="userInfo">
                 <div>로그인 | 회원가입</div>
                 <!-- <div class="userInfoBox">

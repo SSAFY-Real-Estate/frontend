@@ -10,3 +10,20 @@ export const listAllApi = async (page, option) => {
     })
     return response.data;
 }
+
+// 방 내놓기 게시물 전체 조회(페이지네이션)
+export const paginationApi = async () => {
+    const response = await instance.get('/puthouse/pagination');
+    return response.data;
+}
+
+// 방 내놓기 게시물 상세 조회
+export const putHouseDetailApi = async (puthouseid) => {
+    const response = await instance.get(`/puthouse/${puthouseid}`);
+    return response.data;
+}
+
+// 방 내놓기 게시물 삭제(본인 및 관리자)
+export const deletePutHouseApi = async() => {
+
+};
