@@ -1,5 +1,79 @@
 <script setup>
 import BoardCard from "@/components/board/BoardCard.vue";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { getListAll, getTotalPage } from "@/apis/board/board";
+import Pagination2 from "@/components/pagination/Pagination2.vue";
+const router = useRouter(); // 라우터 객체 생성
+const boardInfo = ref([]);
+const currentPage = ref(1);
+const currentOption = ref(0);
+const totalPageCount = ref(0); // 데이터 총 개수
+const onePageCout = ref(3);
+
+const param = ref({
+  page: currentPage.value,
+  option: currentOption.value,
+});
+const listAll = () => {
+  getListAll(
+    param.value,
+    ({ data }) => {
+      console.log(data);
+      boardInfo.value = data;
+    },
+
+    (error) => {
+      console.log("Error Status:", error.response.status); // 401
+      console.log("Error Data:", error.response.data); // 에러 메시지 확인
+      console.log("Error Message:", error.message);
+    }
+  );
+};
+
+const totalPage = () => {
+  getTotalPage(
+    ({ data }) => {
+      totalPageCount.value = data;
+    },
+
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+
+const trending = () => {
+  if (currentOption.value === 0) currentOption.value = 1;
+  else currentOption.value = 0;
+  currentPage.value = 1;
+  param.value.option = currentOption.value;
+  param.value.page = 1;
+  listAll();
+};
+
+onMounted(() => {
+  totalPage();
+  listAll();
+  // console.log(boardInfo);
+});
+
+const onPageChange = (val) => {
+  console.log("여기까지는 넘어오나요?");
+  currentPage.value = val;
+  param.value.page = val;
+  param.value.option = currentOption.value;
+  listAll();
+};
+
+const moveDetail = (val) => {
+  router.push({
+    name: "detail",
+    params: {
+      boardId: val,
+    },
+  });
+};
 </script>
 
 <template>
@@ -15,7 +89,9 @@ import BoardCard from "@/components/board/BoardCard.vue";
               alt="trendingLogo"
             />
           </div>
-          <div class="tools_trending_child_text">트랜딩</div>
+          <div class="tools_trending_child_text" @click="trending()">
+            트랜딩
+          </div>
         </div>
 
         <div class="tools_latest">
@@ -26,7 +102,7 @@ import BoardCard from "@/components/board/BoardCard.vue";
               alt="timeDescLogo"
             />
           </div>
-          <div class="tools_latest_child_text">최신</div>
+          <div class="tools_latest_child_text" @click="trending()">최신</div>
         </div>
       </div>
 
@@ -47,24 +123,23 @@ import BoardCard from "@/components/board/BoardCard.vue";
     </div>
     <!-- board list -->
     <div class="boardList">
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
+      <BoardCard
+        v-for="item in boardInfo"
+        :key="item.boardId"
+        :item="item"
+        @click="moveDetail(item.boardId)"
+      >
+      </BoardCard>
     </div>
     <!-- page bar -->
-    <div></div>
+    <div>
+      <Pagination2
+        :option="currentOption"
+        :count="onePageCout"
+        :totalCount="totalPageCount"
+        @pageChange="onPageChange"
+      />
+    </div>
   </div>
 </template>
 

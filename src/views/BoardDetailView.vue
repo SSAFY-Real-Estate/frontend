@@ -1,4 +1,9 @@
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+// const router =
+// const boardId = ref(router.params.);
+// const boardInfo = ref({});
+</script>
 
 <template>
   <div class="boardSearch">
@@ -187,7 +192,7 @@ input {
 }
 
 .sideBar {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   box-shadow: inset;
   position: fixed;
   top: 30%;
@@ -207,8 +212,8 @@ input {
 }
 
 .sideBarHeart {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
   box-sizing: border-box;
   width: 60px;
@@ -228,8 +233,8 @@ input {
 }
 
 .sideBarComment {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
   box-sizing: border-box;
   width: 60px;
@@ -249,8 +254,8 @@ input {
 }
 
 .sideBarBookMark {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
   box-sizing: border-box;
   padding-top: 10px;
@@ -266,8 +271,9 @@ input {
   cursor: pointer;
 }
 
-.sideBarHeart:hover, .sideBarComment:hover, .sideBarBookMark:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+.sideBarHeart:hover,
+.sideBarComment:hover,
+.sideBarBookMark:hover {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
-
 </style>

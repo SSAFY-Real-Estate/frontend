@@ -3,6 +3,7 @@ import PutHouseListView from "@/views/PutHouseListView.vue";
 import StartView from "@/views/StartView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import BoardListView from "@/views/BoardListView.vue";
+import BoardDetailView from "@/views/BoardDetailView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,10 +23,16 @@ const router = createRouter({
       name: "puthouse",
       component: PutHouseListView,
     },
+
     {
       path: "/board",
       name: "board",
       component: BoardListView,
+    },
+    {
+      path: "/board/:boardId",
+      name: "detail",
+      component: BoardDetailView,
     },
 
     // {

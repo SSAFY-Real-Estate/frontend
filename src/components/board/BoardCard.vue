@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+defineProps({ item: Object });
+</script>
 
 <template>
   <!-- profile -->
@@ -12,9 +14,13 @@
     <!-- content -->
     <div class="content">
       <div class="content_child">
-        <div class="content_child_title"><h4>제목입니다.</h4></div>
-        <div class="content_child_content">내용입니다.</div>
-        <div class="content_child_date">날짜 댓글수입니다.</div>
+        <div class="content_child_title">
+          <h4>{{ item.title }}</h4>
+        </div>
+        <div class="content_child_content">{{ item.content }}</div>
+        <div class="content_child_date">
+          {{ item.updateDate }} {{ item.commentCount }}
+        </div>
       </div>
     </div>
 
@@ -23,14 +29,14 @@
       <div class="like_profile">
         <div class="like_profile_picture"></div>
         <div class="like_profile_by">by</div>
-        <div class="like_profile_text">ssafy</div>
+        <div class="like_profile_text">{{ item.id }}</div>
       </div>
 
       <div class="like_like">
         <div class="like_like_img">
           <i class="fa-solid fa-heart"></i>
         </div>
-        <div class="like_like_count">123</div>
+        <div class="like_like_count"></div>
       </div>
     </div>
   </div>
@@ -38,8 +44,8 @@
 
 <style scoped>
 .BoardCard {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
   border: 1px solid #ddd;
   box-sizing: border-box;
@@ -49,7 +55,7 @@
   cursor: pointer;
 }
 .BoardCard:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
 .like {
   padding: 10px;
@@ -65,7 +71,7 @@
   align-items: center;
 }
 .like_like_img {
-  color: #3EBEEE ;
+  color: #3ebeee;
   padding-top: 3px;
   margin-right: 10px;
 }
@@ -79,7 +85,7 @@
   margin: 0px 5px;
 }
 .like_profile_text {
-  color: #3EBEEE ;
+  color: #3ebeee;
 }
 .like_profile_picture {
   box-sizing: border-box;
