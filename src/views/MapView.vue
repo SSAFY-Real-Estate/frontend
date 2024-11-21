@@ -1,6 +1,6 @@
 <script setup>
 import { KakaoMap, KakaoMapMarker } from "vue3-kakao-maps";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { getLocation } from "@/apis/map/map.js";
 //map load
 //현재 map의 중앙값
@@ -55,6 +55,11 @@ const getInfo = () => {
   // :markerCluster="{ markers: locationList }"
   //:markerList="locationList"
 };
+watch(clusterList, (newClusterList) => {
+  console.log("Cluster list updated:", newClusterList);
+  // 클러스터의 데이터를 사용하여 클러스터를 다시 설정할 수 있습니다.
+  // 예시: 새 데이터를 기반으로 클러스터를 다시 구성하는 코드 추가
+});
 </script>
 
 <template>
@@ -64,7 +69,7 @@ const getInfo = () => {
       @onLoadKakaoMap="onLoadKakaoMap"
       :lat="35.14038425376898"
       :lng="129.07583449357068"
-      :level="14"
+      :level="5"
       :markerCluster="{ markers: clusterList }"
     />
   </div>

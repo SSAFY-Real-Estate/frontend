@@ -15,23 +15,7 @@ import test from "./views/test.vue";
 
 <!-- 1920 X 1080 해상도 기준 -->
 <template>
-  <div id="wrap">
-    <!-- <StartView /> -->
-    <!-- <Header />
-    <MainView />-->
-    <!-- <BoardListView /> 
-    <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
-    <!-- <Editor /> -->
-    <!-- <Header />
-    <MainView /> -->
-    <!-- <BoardListView />
-    <Pagination :path="'test'" :option="0" :count="30" :totalCount="100" /> -->
-    <!-- <BoardDetailView /> -->
-    <!-- <NoticeView /> -->
-    <!-- <SearchBar /> -->
-    <MapView />
-    <!-- <test /> -->
-  </div>
+  <div id="wrap"></div>
 </template>
 
 <style>
