@@ -6,7 +6,8 @@ export const instance = axios.create({
     headers: {
         Authorization: "Bearer " + localStorage.getItem("AccessToken"),
         "Content-Type": "application/json;charset=utf-8",
-    }
+    },
+    withCredentials: true,
 })
 
 export default instance;

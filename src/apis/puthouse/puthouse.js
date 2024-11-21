@@ -27,3 +27,46 @@ export const putHouseDetailApi = async (puthouseid) => {
 export const deletePutHouseApi = async() => {
 
 };
+
+// 방 내놓기 게시물 수정(본인 및 관리자)
+
+
+// 방 내놓기 게시물 좋아요한 사용자 정보 리스트 조회
+export const likePutHouseUsersApi = async(data) => {
+    const response = await instance.get('/puthouse/likeusers', data);
+    return response.data;
+}
+
+// 방 내놓기 게시물 좋아요
+export const likePutHouseApi = async(puthouseid, data) => {
+    const response = await instance.post(`/puthouse/${puthouseid}/like`, data);
+    return response.data;
+}
+
+// 방 내놓기 게시물 좋아요 취소
+export const cancelLikePutHouseApi = async(puthouseid, data) => {
+    const response = await instance.delete(`/puthouse/${puthouseid}/like`, data);
+    return response.data;
+}
+
+// 방 내놓기 게시글 조회수 증가
+export const viewLikePutHouseApi = async(puthouseid, data) => {
+    const response = await instance.post(`/puthouse/${puthouseid}`, data);
+    return response.data;
+}
+
+// 방 내놓기 상세 게시글 북마크 추가
+export const bookmarkPutHouseApi = async(puthouseid, data) => {
+    const response = await instance.post(`/puthouse/${puthouseid}/bookmark`, data);
+    return response.data;
+}
+
+// 방 내놓기 상세 게시글 북마크 취소
+export const cancelBookmarkPutHouseApi = async(puthouseid, data) => {
+    const response = await instance.delete(`/puthouse/${puthouseid}/bookmark`, data);
+}
+
+// 방 내놓기 상세 게시글 북마크 적용중인 사용자 정보 조회
+export const checkBookmarkUserApi = async(puthouseid, data) => {
+    const response = await instance.get(`/puthouse/${puthouseid}/bookmark`, data);
+}

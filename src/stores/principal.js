@@ -1,34 +1,22 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { checkPrincipalApi } from '@/apis/principal/principal';
+import { jwtDecode } from 'jwt-decode';
 
 
-export const usePrincipalStore = defineStore('principal', () => {
-    // 상태
-    const principal = ref(null);
-    const isLoading = ref(false);
-    const error = ref(null);
+export const usePrincipalStore = defineStore('user', () => {
+    const user = ref(null);
   
-    // API 호출 메서드
-    async function fetchPrincipal() {
-      isLoading.value = true;
-      error.value = null;
-  
-      try {
-        const response = await checkPrincipalApi();
-        principal.value = response;
-      } catch (err) {
-        error.value = '오류가 발생하였습니다.';
-        console.error(err);
-      } finally {
-        isLoading.value = false;
+    const fetchUser = async () => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        try {
+          user.value = jwtDecode(token);
+        } catch (error) {
+          console.error('Error decoding token:', error);
+        }
       }
-    }
+    };
   
-    // 초기화 메서드
-    function resetPrincipal() {
-      principal.value = null;
-    }
-  
-    return { principal, isLoading, error, fetchPrincipal, resetPrincipal };
+    return { user, fetchUser };
   });

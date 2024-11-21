@@ -1,7 +1,15 @@
 <script setup>
 import { useRouter } from 'vue-router';
+import { usePrincipalStore } from '@/stores/principal';
+import { jwtDecode } from 'jwt-decode';
+import { ref } from 'vue';
 
 const router = useRouter();
+const flag = ref(false);
+const token = localStorage.getItem('AccessToken');
+const userInfo = ref(null);
+userInfo.value = jwtDecode(token);
+console.log(userInfo.value)
 </script>
 
 <template>
@@ -16,11 +24,11 @@ const router = useRouter();
             <div class="navKeep">찜</div>
             <div class="navPutHouse" @click="router.push({name : 'puthouse'})">방내놓기</div>
             <div class="userInfo">
-                <div>로그인 | 회원가입</div>
-                <!-- <div class="userInfoBox">
-                    <div class="userNickname">SSAFY 님</div>
+                <div v-if="userInfo==null" @click="router.push({name : 'start'})">로그인 | 회원가입</div>
+                <div v-if="userInfo" class="userInfoBox">
+                    <div class="userNickname">{{ userInfo.id }} 님</div>
                     <div class="userProfileImg"></div>
-                </div> -->
+                </div>
             </div>
         </div>
         

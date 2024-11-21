@@ -1,12 +1,18 @@
 <script setup>
-import { putHouseDetailApi } from '@/apis/puthouse/puthouse';
-
+import { likePutHouseUsersApi, putHouseDetailApi } from '@/apis/puthouse/puthouse';
+import { jwtDecode } from 'jwt-decode';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 const props = defineProps({
   puthouseid: Number
 })
+
+const token = localStorage.getItem('AccessToken');
+const userInfo = ref(null);
+userInfo.value = jwtDecode(token);
+
+const likeUsers = ref([]);
 
 const data = ref({});
 const router = useRouter();
@@ -15,6 +21,18 @@ const putHouseDetailShow = async() => {
   try {
     const response = await putHouseDetailApi(props.puthouseid);
     data.value = response;
+  } catch (error) {
+    alert('오류가 발생하였습니다. 해당 서비스를 다시 이용해주세요.');
+  }
+}
+
+const putHouseDetailLikeUsersShow = async() => {
+  try {
+    const response = await likePutHouseUsersApi({
+      putHouseId: props.puthouseid
+    })
+    likeUsers.value = response;
+    console.log(likeUsers.value);
   } catch (error) {
     alert('오류가 발생하였습니다. 해당 서비스를 다시 이용해주세요.');
   }
@@ -34,8 +52,27 @@ const formattedUpdateDate = computed(() => {
   return '';
 });
 
+const likeClick = async() => {
+  try {
+    if(!userInfo) {
+      if(window.confirm('로그인 가능한 사용자 서비스입니다. 시작페이지로 이동하시겠습니까?')) {
+        router.push({name : 'start'});
+        return;
+      }else {
+        return;
+      }
+    } else {
+
+    }
+
+  } catch (error) {
+    alert('오류가 발생하였습니다. 해당 서비스를 다시 이용해주세요.');
+  }
+}
+
 onMounted(() => {
   putHouseDetailShow();
+  putHouseDetailLikeUsersShow();
 })
 
 </script>
@@ -47,8 +84,8 @@ onMounted(() => {
     <div class="updateAndDate">
       <div class="updateAndDate_date"><span class="writerNickname">{{ data.nickname }}</span><span>{{ formattedUpdateDate }}</span></div>
       <div class="updatgeAndDte_update">
-        <button class="updatgeAndDte_update_update">수정</button>
-        <button class="updatgeAndDte_update_delete">삭제</button>
+        <button v-if="userInfo.userId == data.userId" class="updatgeAndDte_update_update">수정</button>
+        <button v-if="userInfo.userId == data.userId" class="updatgeAndDte_update_delete">삭제</button>
       </div>
     </div>
 
@@ -56,7 +93,7 @@ onMounted(() => {
       {{ data.content }}
     </div>
 
-    <div class="commentCount">9개의 댓글</div>
+    <div class="commentCount">{{ data.commentCount }}개의 댓글</div>
     <div class="comment">
       <div class="comment_pni">
         <div class="comment_profile"></div>
