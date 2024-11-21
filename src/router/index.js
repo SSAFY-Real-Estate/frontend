@@ -1,20 +1,28 @@
-import MainView from '@/views/MainView.vue'
-import StartView from '@/views/StartView.vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import BoardListView from "@/views/BoardListView.vue";
+import MainView from "@/views/MainView.vue";
+import StartView from "@/views/StartView.vue";
+import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'start',
+      path: "/",
+      name: "start",
       component: StartView,
     },
     {
-      path: '/main',
-      name: 'main',
+      path: "/main",
+      name: "main",
       component: MainView,
-    }
+    },
+
+    {
+      path: "/board",
+      name: "board",
+      component: BoardListView,
+    },
+
     // {
     //   path: '/about',
     //   name: 'about',
@@ -24,6 +32,6 @@ const router = createRouter({
     //   component: () => import('../views/AboutView.vue'),
     // },
   ],
-})
+});
 
-export default router
+export default router;
