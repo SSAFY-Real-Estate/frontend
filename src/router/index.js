@@ -1,4 +1,5 @@
 import MainView from '@/views/MainView.vue'
+import PutHouseListView from '@/views/PutHouseListView.vue'
 import StartView from '@/views/StartView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -14,6 +15,11 @@ const router = createRouter({
       path: '/main',
       name: 'main',
       component: MainView,
+    },
+    {
+      path: '/puthouse',
+      name: 'puthouse',
+      component: PutHouseListView,
     }
     // {
     //   path: '/about',
