@@ -35,6 +35,7 @@ import test from "./views/test.vue";
     <!-- <SearchBar /> -->
     <!-- <MapView /> -->
     <RouterView />
+    <!-- <test /> -->
   </div>
 </template>
 

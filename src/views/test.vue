@@ -46,6 +46,9 @@ const markerList = [
     :level="14"
     :markerCluster="{ markers: markerList }"
   />
+  <div v-for="item in markerList">
+    <div>{{ item }}</div>
+  </div>
 </template>
 
 <style scoped></style>

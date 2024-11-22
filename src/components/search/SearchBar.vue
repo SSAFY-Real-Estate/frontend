@@ -1,11 +1,21 @@
-<script setup></script>
-
+<script setup>
+import { ref } from "vue";
+const emit = defineEmits(["search"]);
+const textSearch = ref("");
+const eventSearch = (event) => {
+  if (event.key == "Enter") {
+    emit("search", textSearch.value);
+  } else return;
+};
+</script>
 <template>
   <div class="searchBar">
     <div class="searchBar_img">
       <img src="../../assets/apartLogo.png" width="30px" height="30px" />
     </div>
-    <div class="searchBar_input"><input type="text" /></div>
+    <div class="searchBar_input">
+      <input type="text" @keyup="eventSearch" v-model="textSearch" />
+    </div>
   </div>
 </template>
 

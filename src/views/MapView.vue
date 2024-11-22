@@ -1,77 +1,66 @@
 <script setup>
 import { KakaoMap, KakaoMapMarker } from "vue3-kakao-maps";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { getLocation } from "@/apis/map/map.js";
+const mapContainer = ref(null);
+
+onMounted(() => {
+  loadKakaoMap(mapContainer.value);
+});
+
+const loadKakaoMap = (container) => {
+  const script = document.createElement("script");
+  script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${
+    import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
+  }`;
+  document.head.appendChild(script);
+
+  script.onload = () => {
+    window.kakao.maps.load(() => {
+      const options = {
+        //지도를 생성할 때 필요한 기본 옵션
+        center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
+        level: 3, //지도의 레벨(확대, 축소 정도)
+      };
+
+      const mapInstance = new window.kakao.maps.Map(container, options);
+    });
+  };
+};
+
 //map load
 //현재 map의 중앙값
-const map = ref(); // 카카오 맵
+// const map = ref(); // 카카오 맵
 
-const onLoadKakaoMap = (mapRef) => {
-  map.value = mapRef;
-  const mapTypeControl = new kakao.maps.MapTypeControl();
-  map.value.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-};
+// //남동쪽 북서쪽 좌표 범위 안에 있는 좌표들을 가져옴
+// const locationList = ref([]); // 범위안 좌표
 
-//남동쪽 북서쪽 좌표 범위 안에 있는 좌표들을 가져옴
-const locationList = ref([]); // 범위안 좌표
-const clusterList = ref([]);
-const apiGetLocation = (location) => {
-  getLocation(
-    location,
-    ({ data }) => {
-      locationList.value = data.map((item, index) => ({
-        key: index + 1, // 고유한 key 값 추가 (1부터 시작)
-        ...item, // 기존 데이터 그대로 유지
-      }));
+// const apiGetLocation = (location) => {
+//   getLocation(
+//     location,
+//     ({ data }) => {
+//       locationList.value = data.map((item, index) => ({
+//         key: index + 1, // 고유한 key 값 추가 (1부터 시작)
+//         ...item, // 기존 데이터 그대로 유지
+//       }));
+//       const markers = data.map(
+//         ({ lat, lng }) =>
+//           new kakao.maps.Marker({
+//             position: new kakao.maps.LatLng(lat, lng),
+//           })
+//       );
 
-      clusterList.value = data;
-    },
-    (error) => {
-      console.log(error);
-    }
-  );
-};
-
-// 남동쪽 // 북서쪽 계산
-const getInfo = () => {
-  if (map.value) {
-    const bounds = map.value.getBounds(); // 현재 영역으로 가져옴
-    const swLatLng = bounds.getSouthWest(); // 남서쪽을 가져옴
-    const neLatLng = bounds.getNorthEast(); // 북서쪽을 가져옴
-
-    const location = {
-      swLat: swLatLng.getLat(),
-      swLng: swLatLng.getLng(),
-      neLat: neLatLng.getLat(),
-      neLng: neLatLng.getLng(),
-    };
-
-    console.log(location);
-    apiGetLocation(location);
-    console.log(clusterList);
-    //console.log(locationList);
-  }
-  // :level="14"
-  // :markerCluster="{ markers: locationList }"
-  //:markerList="locationList"
-};
-watch(clusterList, (newClusterList) => {
-  console.log("Cluster list updated:", newClusterList);
-  // 클러스터의 데이터를 사용하여 클러스터를 다시 설정할 수 있습니다.
-  // 예시: 새 데이터를 기반으로 클러스터를 다시 구성하는 코드 추가
-});
+//       clusterer.addMarkers(markers);
+//       console.log(clusterList);
+//     },
+//     (error) => {
+//       console.log(error);
+//     }
+//   );
+// };
 </script>
 
 <template>
-  <div>
-    <button @click="getInfo">누르세요</button>
-    <KakaoMap
-      @onLoadKakaoMap="onLoadKakaoMap"
-      :lat="35.14038425376898"
-      :lng="129.07583449357068"
-      :level="5"
-      :markerCluster="{ markers: clusterList }"
-    />
-  </div>
+  <div ref="mapContainer" style="width: 500px; height: 500px"></div>
 </template>
 <style scoped></style>

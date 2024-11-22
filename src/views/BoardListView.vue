@@ -2,19 +2,33 @@
 import BoardCard from "@/components/board/BoardCard.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { getListAll, getTotalPage } from "@/apis/board/board";
+import {
+  getListAll,
+  getTotalPage,
+  getSearch,
+  getSearchTotalPage,
+} from "@/apis/board/board";
 import Pagination2 from "@/components/pagination/Pagination2.vue";
+import SearchBar from "@/components/search/SearchBar.vue";
 const router = useRouter(); // 라우터 객체 생성
 const boardInfo = ref([]);
 const currentPage = ref(1);
 const currentOption = ref(0);
 const totalPageCount = ref(0); // 데이터 총 개수
 const onePageCout = ref(3);
+const word = ref(""); // 검색이 된 상태인지 아닌지.
 
 const param = ref({
   page: currentPage.value,
   option: currentOption.value,
 });
+
+const searchParm = ref({
+  page: 1,
+  option: 0,
+  word: "",
+});
+
 const listAll = () => {
   getListAll(
     param.value,
@@ -31,12 +45,36 @@ const listAll = () => {
   );
 };
 
+const searchListAll = () => {
+  getSearch(
+    searchParm.value,
+    ({ data }) => {
+      boardInfo.value = data;
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+
 const totalPage = () => {
   getTotalPage(
     ({ data }) => {
       totalPageCount.value = data;
     },
 
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+
+const searchTotalPage = () => {
+  getSearchTotalPage(
+    ({ data }) => word,
+    ({ data }) => {
+      totalPageCount.value = data;
+    },
     (error) => {
       console.log(error);
     }
@@ -52,14 +90,7 @@ const trending = () => {
   listAll();
 };
 
-onMounted(() => {
-  totalPage();
-  listAll();
-  // console.log(boardInfo);
-});
-
 const onPageChange = (val) => {
-  console.log("여기까지는 넘어오나요?");
   currentPage.value = val;
   param.value.page = val;
   param.value.option = currentOption.value;
@@ -74,6 +105,20 @@ const moveDetail = (val) => {
     },
   });
 };
+
+const eventSearch = (eventWord) => {
+  console.log(eventWord);
+  word.value = eventWord;
+  searchParm.value.word = word.value;
+  searchTotalPage();
+  searchListAll();
+};
+
+onMounted(() => {
+  totalPage();
+  listAll();
+  // console.log(boardInfo);
+});
 </script>
 
 <template>
@@ -121,6 +166,11 @@ const moveDetail = (val) => {
         </div>
       </div>
     </div>
+    <!--search bar-->
+    <div class="searchBar">
+      <SearchBar @search="eventSearch" />
+    </div>
+    <div class="searchBar_number">총 n개의 포스트를 찾았습니다.</div>
     <!-- board list -->
     <div class="boardList">
       <BoardCard
@@ -144,6 +194,17 @@ const moveDetail = (val) => {
 </template>
 
 <style scoped>
+.searchBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+}
+.searchBar_number {
+  margin-left: 100px;
+  font-size: 30px;
+  margin-top: 10px;
+}
 .BoardListView {
   /* header 적용시 너무 붙어 있어서 띄우기 */
   /* padding-top: 20px; */
