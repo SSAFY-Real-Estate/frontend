@@ -14,7 +14,7 @@ console.log(userInfo.value)
 
 <template>
     <div id="headerWrap">
-        <div class="headerLogo">
+        <div class="headerLogo" @click="router.push({name : 'main'})">
             <img src="../../assets/headerLogo.png" alt="headerLogo">
         </div>
         <div class="nav">
