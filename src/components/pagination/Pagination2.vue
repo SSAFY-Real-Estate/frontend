@@ -1,11 +1,12 @@
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import { useRouter } from "vue-router"; // Vue Router 사용
 
 const emit = defineEmits(["pageChange"]);
 const props = defineProps({
   path: String, // URL (이제 사용하지 않음, Vue Router로 이동)
   option: Number, // 옵션: 0 - 최신순, 1 - 트렌딩
+  currentPage: Number,
   count: {
     // 한 페이지에 보여줄 데이터 수
     type: Number,
@@ -18,18 +19,23 @@ const props = defineProps({
     required: true,
     default: 0, // 기본값
   },
+  //
 });
 
 // 현재 페이지(default: 1)
 const currentPageNumber = ref(1);
-
+watch(
+  () => props.currentPage,
+  () => {
+    currentPageNumber.value = props.currentPage;
+  }
+);
 // 총 페이지 수 계산 (props.count가 0이면 1로 처리)
 const pageCount = computed(() => {
   const totalPages =
     props.count > 0 ? Math.ceil(props.totalCount / props.count) : 1;
   return totalPages;
 });
-
 // 페이지 번호 배열 생성
 const pageNumbers = computed(() => {
   const pageGroupSize = 10; // 페이지 그룹 크기
@@ -62,6 +68,8 @@ const changePage = (page) => {
     emit("pageChange", page);
   }
 };
+
+// 엔터를 눌렀다면 그냥 1페이지로 가버림
 </script>
 
 <template>

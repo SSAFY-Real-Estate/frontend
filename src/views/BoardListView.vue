@@ -11,11 +11,11 @@ import {
 import Pagination2 from "@/components/pagination/Pagination2.vue";
 import SearchBar from "@/components/search/SearchBar.vue";
 const router = useRouter(); // 라우터 객체 생성
-const boardInfo = ref([]);
-const currentPage = ref(1);
-const currentOption = ref(0);
+const boardInfo = ref([]); // 받아온 데이터
+const currentPage = ref(1); // 현재 페이지
+const currentOption = ref(0); // 현재 옵션
 const totalPageCount = ref(0); // 데이터 총 개수
-const onePageCout = ref(3);
+const onePageCout = ref(3); // 받아올 페이지
 const word = ref(""); // 검색이 된 상태인지 아닌지.
 
 const param = ref({
@@ -71,8 +71,9 @@ const totalPage = () => {
 
 const searchTotalPage = () => {
   getSearchTotalPage(
-    ({ data }) => word,
+    searchParm.value,
     ({ data }) => {
+      console.log(data);
       totalPageCount.value = data;
     },
     (error) => {
@@ -91,10 +92,18 @@ const trending = () => {
 };
 
 const onPageChange = (val) => {
-  currentPage.value = val;
-  param.value.page = val;
-  param.value.option = currentOption.value;
-  listAll();
+  if (word.value === "") {
+    currentPage.value = val;
+    param.value.page = val;
+    param.value.option = currentOption.value;
+    word.value = "";
+    listAll();
+  } else {
+    currentPage.value = val;
+    searchParm.value.page = val;
+    searchParm.value.word = word;
+    searchListAll();
+  }
 };
 
 const moveDetail = (val) => {
@@ -107,11 +116,10 @@ const moveDetail = (val) => {
 };
 
 const eventSearch = (eventWord) => {
-  console.log(eventWord);
   word.value = eventWord;
   searchParm.value.word = word.value;
   searchTotalPage();
-  searchListAll();
+  onPageChange(1);
 };
 
 onMounted(() => {
@@ -170,7 +178,9 @@ onMounted(() => {
     <div class="searchBar">
       <SearchBar @search="eventSearch" />
     </div>
-    <div class="searchBar_number">총 n개의 포스트를 찾았습니다.</div>
+    <div class="searchBar_number">
+      총 {{ totalPageCount }}개의 포스트를 찾았습니다.
+    </div>
     <!-- board list -->
     <div class="boardList">
       <BoardCard
@@ -187,6 +197,7 @@ onMounted(() => {
         :option="currentOption"
         :count="onePageCout"
         :totalCount="totalPageCount"
+        :currentPage="currentPage"
         @pageChange="onPageChange"
       />
     </div>

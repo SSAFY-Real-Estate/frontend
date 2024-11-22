@@ -25,7 +25,10 @@ function getSearch(param, success, fail) {
 }
 
 function getSearchTotalPage(param, success, fail) {
-  instance.get(`/board/search/pagination`).then(success).catch(fail);
+  instance
+    .get(`/board/search/pagination?word=${param.word}`)
+    .then(success)
+    .catch(fail);
 }
 
 // function getSearchList()
@@ -42,6 +45,12 @@ function delComment(boardId, success, fail) {
   instance.delete(`/board/${boardId}`).then(success).catch(fail);
 }
 
+function writeLike(boardId, param, success, fail) {
+  instance
+    .post(`/board/${boardId}/like`, JSON.stringify(param))
+    .then(success)
+    .catch(fail);
+}
 export {
   getSearchTotalPage,
   getListAll,
@@ -51,4 +60,5 @@ export {
   writeComment,
   delComment,
   getSearch,
+  writeLike,
 };

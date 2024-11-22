@@ -1,11 +1,12 @@
 <script setup>
-import { ref, onMounted, nextTick, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   getDetail,
   getComment,
   writeComment,
   delComment,
+  writeLike,
 } from "@/apis/board/board";
 const route = useRoute();
 const router = useRouter();
@@ -15,13 +16,31 @@ const commentInfo = ref([]);
 const content = ref("");
 const flag = ref(false); // 댓글 작성 성공 여부
 const delFlag = ref(false); // 게시판 삭제 성공여부
+const likeFlag = ref(false); // 좋아요 등록 성공여부
+const likeInfo = ref([]); // 좋아요 데이터
+const tmpUserId = ref(3); // userId 임시데이터
 const param = ref({
   boardId: 0,
   userId: 1,
   content: "",
 });
-
+const likeParam = ref({
+  userId: tmpUserId,
+});
 // axios
+// 좋아요 등록
+const like = () => {
+  writeLike(
+    boardId,
+    likeParam.value,
+    ({ data }) => {
+      likeFlag.value = data;
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
 const detail = () => {
   getDetail(
     boardId,
@@ -70,6 +89,7 @@ const dComment = () => {
     }
   );
 };
+
 const eventCommentHandle = (event) => {
   if (event.key == "Enter") eventComment();
 };
@@ -163,12 +183,12 @@ watch(flag, () => {
     <div class="sideBar">
       <div class="sideBarHeart">
         <div><i class="fa-solid fa-heart"></i></div>
-        <div class="sideBarHeartCount">123</div>
+        <div class="sideBarHeartCount">{{ boardInfo.likeCount }}</div>
       </div>
 
       <div class="sideBarComment">
         <div><i class="fa-solid fa-comment"></i></div>
-        <div class="sideBarCount">123</div>
+        <div class="sideBarCount">{{ boardInfo.commentCount }}</div>
       </div>
       <div class="sideBarBookMark">
         <div><i class="fa-solid fa-bookmark"></i></div>
