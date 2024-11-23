@@ -1,8 +1,10 @@
 import MainView from '@/views/MainView.vue'
+import My from '@/views/My.vue'
 import PutHouseDetailView from '@/views/PutHouseDetailView.vue'
 import PutHouseListView from '@/views/PutHouseListView.vue'
 import PutHouseWrite from '@/views/PutHouseWrite.vue'
 import StartView from '@/views/StartView.vue'
+import Zzim from '@/views/Zzim.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -33,15 +35,17 @@ const router = createRouter({
       path: '/puthouse/posts',
       name: 'puthousePosts',
       component: PutHouseWrite
+    },
+    {
+      path: '/my',
+      name: 'my',
+      component: My
+    },
+    {
+      path: '/zzim',
+      name: 'zzim',
+      component: Zzim
     }
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('../views/AboutView.vue'),
-    // },
   ],
 })
 

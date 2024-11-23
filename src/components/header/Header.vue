@@ -1,15 +1,52 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { usePrincipalStore } from '@/stores/principal';
 import { jwtDecode } from 'jwt-decode';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { getMyInfoApi } from '@/apis/my/my';
 
 const router = useRouter();
-const flag = ref(false);
-const token = localStorage.getItem('AccessToken');
+
 const userInfo = ref(null);
-userInfo.value = jwtDecode(token);
-console.log(userInfo.value)
+const buttonflag = ref(false);
+const showUserInfo = ref(null);
+
+const logOutClick = () => {
+    localStorage.removeItem('AccessToken');
+    buttonflag.value = false;
+    window.location.reload();
+}
+
+const goMyButtonClick = () => {
+    router.push({name : 'my'})
+    buttonflag.value = false;
+}
+
+onMounted(() => {
+    const token = localStorage.getItem('AccessToken');
+    if(token) {
+        userInfo.value = jwtDecode(token);
+    }
+});
+
+watch(userInfo, () => {
+    showUserInformation(userInfo.value.userId);
+})
+
+const showUserInformation = async(userId) => {
+    try {
+        const response = await getMyInfoApi(userId);
+        showUserInfo.value = response;
+        console.log(response);
+    } catch (error) {
+        alert("오류가 발생했습니다. 서비스를 다시 이용해주세요.");
+    }
+}
+
+const buttonClick = () => {
+    if(userInfo.value) {
+        buttonflag.value = !buttonflag.value;
+    }
+}
 </script>
 
 <template>
@@ -21,17 +58,25 @@ console.log(userInfo.value)
             <div class="navMap">지도</div>
             <div class="navAdoptation">분양</div>
             <div class="navBoard">게시판</div>
-            <div class="navKeep">찜</div>
+            <div class="navKeep" @click="router.push({name : 'zzim'})">찜</div>
             <div class="navPutHouse" @click="router.push({name : 'puthouse'})">방내놓기</div>
-            <div class="userInfo">
-                <div v-if="userInfo==null" @click="router.push({name : 'start'})">로그인 | 회원가입</div>
+            <div class="userInfo" @click="buttonClick">
+                <div v-if="userInfo == null" @click="router.push({name : 'start'})">로그인 | 회원가입</div>
                 <div v-if="userInfo" class="userInfoBox">
-                    <div class="userNickname">{{ userInfo.id }} 님</div>
-                    <div class="userProfileImg"></div>
+                    <div class="userNickname">{{ showUserInfo?.nickname }} 님</div>
+                    <div class="userProfileImg">
+                        <img v-if="showUserInfo?.profileImgUrl!=''" :src="showUserInfo?.profileImgUrl" alt="profileImgUrl">
+                        <div v-if="showUserInfo?.profileImgUrl==''" class="defaultProfileImg">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div v-if="buttonflag" class="myAndLogout">
+                <div @click="goMyButtonClick" class="goMy">마이페이지</div>
+                <div @click="logOutClick" class="logOutButton">로그아웃</div>
+            </div>
         </div>
-        
     </div>
 </template>
 
@@ -58,6 +103,7 @@ console.log(userInfo.value)
     }
 
     .nav {
+        position: relative;
         display: flex;
         align-items: center;
         height: 100%;
@@ -108,7 +154,56 @@ console.log(userInfo.value)
         right: 5px;
         width: 40px;
         height: 40px;
-        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .userProfileImg > img {
+        width: 100%;
         border-radius: 50%;
     }
+    .defaultProfileImg {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        font-size: 30px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .myAndLogout {
+        position: absolute;
+        right: 0;
+        top: 70px;
+        z-index: 999;
+        width: 220px;
+        gap: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        border-radius: 9px;
+    }
+
+    .myAndLogout div {
+        transition: all 0.3s;
+        width: 100%;
+        height: 50%;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #3EBEEE;
+        border-radius: 9px;
+        height: 40px;
+    }
+
+    .myAndLogout div:hover {
+        opacity: 0.8;
+    }
+
 </style>

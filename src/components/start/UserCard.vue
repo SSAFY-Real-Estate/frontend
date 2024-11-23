@@ -3,9 +3,9 @@ import { onMounted, ref, watch } from 'vue';
 import { REGEX } from '@/constants/regex';
 import { useRouter } from 'vue-router';
 import { checkIdDuplicatedApi, checkNicknameDuplicatedApi, findIdByEmailApi, findPasswordByIdAndEmailApi, signInApi, signUpApi } from '@/apis/user/user';
-// import { refStorage } from 'firebase/storage';
+import { ref as firebaseRef, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
+import { v4 as uuid } from 'uuid';
 import { storage } from '@/apis/firebase/firebaseConfig';
-
 const router = useRouter();
 
 const option = ['로그인', '아이디 찾기', '비밀번호 찾기', '회원가입'];
@@ -74,10 +74,6 @@ const clickSignUp = () => {
 // 0: 로그인
 const id = ref("");
 const password = ref("");
-watch((id, password), () => {
-    console.log('id : ' + id.value);
-    console.log('password : ' + password.value);
-})
 const rememberId = ref(false);
 watch(rememberId, () => {
     console.log(rememberId.value);
@@ -192,6 +188,8 @@ const signUpPasswordCheck = ref('');
 const signUpEmail = ref('');
 const signUpNickname = ref('');
 const signUpProfileImg = ref('');
+
+const profileImgName = ref('');
 
 const idValidationFlag = ref(false);
 const passwordValidationFlag  = ref(false);
@@ -373,25 +371,38 @@ watch(signUpProfileImg, () => {
 })
 
 // 파이어베이스 프로필 이미지 업로드
-// const firebaseStorage = refStorage(storage); // 파이어베이스 스토리지 연동 연결
+const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
 
-// const handleFileChange = (e) => {
-//     const files = Array.from(e.target.files);
+    if(files.length == 0) {
+        e.target.value = '';
+        return;
+    }
 
-//     if(!files.length == 0) {
-//         return;
-//     }
+    if(!window.confirm('파일을 업로드 하시겠습니까?')) {
+        e.target.value = '';
+        return;
+    }
 
-//     const file = files[0];
+    const file = files[0];
 
-//     const fileReader = new FileReader();
+    const storageRef = firebaseRef(storage, `home/profileImgUrl/${uuid()}_${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    profileImgName.value = file.name;
 
-//     fileReader.onload = (e) => {
-//         signUpProfileImg.value = e.target.result;
-//     }
-
-//     fileReader.readAsDataURL(file);
-// }
+    uploadTask.on(
+        'state_changed',
+        snapshot => {},
+        error => {},
+        () => {
+            alert('프로필 이미지 업로드를 완료하였습니다.');
+            getDownloadURL(storageRef)
+            .then(url => {
+                signUpProfileImg.value = url;
+            })
+        }
+    );
+}
 
 
 // 초기화 로직
@@ -450,8 +461,8 @@ onMounted(() => {
                 <p :class="idValidationFlag ? 'correctValidation' : 'wrongValidation'" v-if="signUpId">{{ validationMessage.idValidation }}</p>
             </div>
             <div class="signUpInputPasswordBox">
-                <input type="text" placeholder="비밀번호" v-model.lazy="signUpPassword">
-                <input type="text" placeholder="비밀번호 확인" v-model.lazy="signUpPasswordCheck">
+                <input type="password" placeholder="비밀번호" v-model.lazy="signUpPassword">
+                <input type="password" placeholder="비밀번호 확인" v-model.lazy="signUpPasswordCheck">
                 <p :class="passwordValidationFlag ? 'correctValidation' : 'wrongValidation'" v-if="signUpPassword">{{ validationMessage.passValidation }}</p>
             </div>
             <div class="signUpInputEmailBox">
@@ -467,9 +478,9 @@ onMounted(() => {
                 <p :class="nicknameValidationFlag ? 'correctValidation' : 'wrongValidation'" v-if="signUpNickname">{{ validationMessage.nicknameValidation }}</p>
             </div>
             <div class="signUpInputProfileImgBox">
-                <input class="profileImgValue" disabled value="첨부파일" placeholder="프로필 이미지">
+                <input class="profileImgValue" disabled :value="profileImgName" placeholder="첨부파일">
                 <label for="file"></label>
-                <input type="file" id="profileImgfile">
+                <input type="file" id="profileImgfile" @change="handleFileChange">
             </div>
             <button @click="signUpClick">회원가입</button>
         </div>
