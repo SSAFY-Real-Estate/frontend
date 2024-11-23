@@ -9,33 +9,92 @@ import {
   writeLike,
   getLike,
   delLike,
+  delBookMark,
+  writeBookMark,
+  getBookMark
 } from "@/apis/board/board";
 const route = useRoute();
 const router = useRouter();
 const { boardId } = route.params;
 
-const boardInfo = ref({});
-const commentInfo = ref([]);
+const boardInfo = ref({}); // 게시판 데이터
+const commentInfo = ref([]); // 댓글 데이터
 const likeInfo = ref([]); // 좋아요 데이터
+const bookMarkInfo = ref([])
 
 const initFalg = ref(false);
 const isLike = ref(false); // 좋아요 눌렀는지 여부
+const isBookMark = ref(false); // 북마크 눌러놨는지 여부
 const content = ref("");
 const flag = ref(false); // 댓글 작성 성공 여부
 const delFlag = ref(false); // 게시판 삭제 성공여부
 const likeFlag = ref(false); // 좋아요 등록 성공여부
 const delLikeFlag = ref(false); // 좋아요 삭제 성공여부
+const bookMarkFlag = ref(false); // 북마크 등록 성공여부
+const delBookMarkFlag = ref(false); // 북마크 삭제 성공 여부
+const getBookMarkFlag = ref(false); // 북마크 조회 성공 여부
+
 const tmpUserId = ref(1); // userId 임시데이터
 
+//comment parameter
 const param = ref({
   boardId: 0,
   userId: 1,
   content: "",
 });
+
+// like parameter
 const likeParam = ref({
   userId: tmpUserId.value,
 });
+
+// bookmark parameter
+const bookMarkParam = ref({
+  userId: tmpUserId.value
+})
 // axios
+// 북마크 등록
+const bookMark = () => {
+  writeBookMark(
+    boardId,
+    bookMarkParam.value,
+    ({ data }) => {
+      bookMarkFlag.value = data;
+    },
+    (error) => {
+      console.log(error);
+    }
+  )
+}
+
+// 북마크 취소
+const dBookMark = () => {
+  delBookMark(
+    boardId,
+    bookMarkParam.value,
+    ({ data }) => {
+      delBookMarkFlag.value = data;
+    },
+    (error) => {
+      console.log(error);
+    }
+  )
+}
+
+// 북마크 조회
+const gBookMark = () => {
+  getBookMark(
+    boardId,
+    ({ data }) => {
+      bookMarkInfo.value = data;
+      getBookMarkFlag.value = true;
+    }
+    ,
+    (error) => {
+      console.log(error);
+    }
+  )
+}
 // 좋아요 등록
 const like = () => {
   writeLike(
@@ -177,17 +236,34 @@ watch(likeFlag, () => {
   likeFlag.value = false;
 }
 );
+const eventBookMark = () => {
+  if (isBookMark.value === false)
+  {
+    isBookMark.value = !isBookMark.value;
+    bookMark();
+  }
+  else {
+    isBookMark.value = !isBookMark.value;
+    dBookMark();
+  }
+}
 
 // 처음에 현재 유저가 좋아요 눌렀는지 안눌렀는지 확인
 const initLike = () => {
-  console.log(likeInfo.value.length)
   for (let item of likeInfo.value) {
-    console.log(item);
     if (tmpUserId.value == item.userId) {
-        console.log("찾았다")
         isLike.value = true;
         break;
       }
+  }
+}
+const initBookMark = () => {
+  console.log(bookMarkInfo.value.length)
+  for (let item of bookMarkInfo.value) {
+    if (tmpUserId.value === item.userId) {
+      isBookMark.value = true;
+      break;
+    }
   }
 }
 
@@ -195,11 +271,14 @@ onMounted(() => {
   detail();
   comment();
   gLike();
+  gBookMark();
 });
 watch(initFalg, () => {
   if(initFalg.value === true) initLike();
 })
-
+watch(getBookMarkFlag, () => {
+  if (getBookMarkFlag.value === true) initBookMark();
+})
 watch(flag, () => {
   if (flag.value === true) comment();
   flag.value = false;
@@ -265,7 +344,7 @@ watch(flag, () => {
         <div><i class="fa-solid fa-comment"></i></div>
         <div class="sideBarCount">{{ commentInfo.length }}</div>
       </div>
-      <div class="sideBarBookMark">
+      <div class="sideBarBookMark" :class="{'sideBarBookMark': !isBookMark, 'sideBarBookMark_on':isBookMark}" @click="eventBookMark">
         <div><i class="fa-solid fa-bookmark"></i></div>
       </div>
     </div>
@@ -479,7 +558,24 @@ input {
 .sideBarCount {
   font-size: 12px;
 }
-
+.sideBarBookMark_on{
+  color: red;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: inset;
+  box-sizing: border-box;
+  padding-top: 10px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 24px;
+  cursor: pointer;
+}
 .sideBarBookMark {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);

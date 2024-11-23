@@ -33,6 +33,13 @@ function getSearchTotalPage(param, success, fail) {
 function getLike(boardId, success, fail) {
   instance.get(`/board/${boardId}/like`).then(success).catch(fail);
 }
+
+function getBookMark(boardId, success, fail) {
+  instance
+    .get(`/board/${boardId}/check`)
+    .then(success)
+    .catch(fail);
+}
 // function getSearchList()
 
 //post 요청
@@ -50,18 +57,31 @@ function writeLike(boardId, param, success, fail) {
     .catch(fail);
 }
 
+function writeBookMark(boardId, param, success, fail) {
+  instance
+    .post(`board/${boardId}/bookmark`, JSON.stringify(param))
+    .then(success)
+    .catch(fail);
+}
+
 // delete 요청
 function delComment(boardId, success, fail) {
   instance.delete(`/board/${boardId}`).then(success).catch(fail);
 }
 
 function delLike(boardId, param, success, fail) {
-  console.log(param.userId);
-  console.log(boardId);
   instance
     .delete(`/board/${boardId}/like/${param.userId}`)
     .then(success)
     .catch(fail);
+}
+
+function delBookMark(boardId, param, success, fail) {
+  instance
+    .delete(`/board/${boardId}/bookmark/${param.userId}`)
+    .then(success)
+    .catch(fail)
+  
 }
 export {
   getSearchTotalPage,
@@ -75,4 +95,7 @@ export {
   writeLike,
   getLike,
   delLike,
+  delBookMark,
+  writeBookMark,
+  getBookMark
 };
