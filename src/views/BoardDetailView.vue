@@ -13,22 +13,27 @@ import {
 const route = useRoute();
 const router = useRouter();
 const { boardId } = route.params;
+
 const boardInfo = ref({});
 const commentInfo = ref([]);
+const likeInfo = ref([]); // 좋아요 데이터
+
+const initFalg = ref(false);
+const isLike = ref(false); // 좋아요 눌렀는지 여부
 const content = ref("");
 const flag = ref(false); // 댓글 작성 성공 여부
 const delFlag = ref(false); // 게시판 삭제 성공여부
 const likeFlag = ref(false); // 좋아요 등록 성공여부
 const delLikeFlag = ref(false); // 좋아요 삭제 성공여부
-const likeInfo = ref([]); // 좋아요 데이터
-const tmpUserId = ref(3); // userId 임시데이터
+const tmpUserId = ref(1); // userId 임시데이터
+
 const param = ref({
   boardId: 0,
   userId: 1,
   content: "",
 });
 const likeParam = ref({
-  userId: tmpUserId,
+  userId: tmpUserId.value,
 });
 // axios
 // 좋아요 등록
@@ -51,6 +56,7 @@ const gLike = () => {
     boardId,
     ({ data }) => {
       likeInfo.value = data;
+      initFalg.value = true
     },
     (error) => {
       console.log(error);
@@ -61,6 +67,7 @@ const gLike = () => {
 const dLike = () => {
   delLike(
     boardId,
+    likeParam.value,
     ({ data }) => {
       delLikeFlag.value = data;
     },
@@ -148,11 +155,50 @@ const eventDelete = () => {
     console.log("삭제 취소");
   }
 };
+const eventLike = () => {
+  if (isLike.value === false) {
+    isLike.value = !isLike.value;
+    // 좋아요 등록
+    likeFlag.value = like();
+  }
+  else {
+    // 좋아요 취소
+    isLike.value = !isLike.value;
+    delLikeFlag.value = dLike();
+  }
+}
+watch(delLikeFlag, () => {
+  if (delLikeFlag.value === true) gLike();
+  delLikeFlag.value = false;
+})
+
+watch(likeFlag, () => {
+  if (likeFlag.value === true) gLike();
+  likeFlag.value = false;
+}
+);
+
+// 처음에 현재 유저가 좋아요 눌렀는지 안눌렀는지 확인
+const initLike = () => {
+  console.log(likeInfo.value.length)
+  for (let item of likeInfo.value) {
+    console.log(item);
+    if (tmpUserId.value == item.userId) {
+        console.log("찾았다")
+        isLike.value = true;
+        break;
+      }
+  }
+}
+
 onMounted(() => {
   detail();
   comment();
-  console.log(boardId);
+  gLike();
 });
+watch(initFalg, () => {
+  if(initFalg.value === true) initLike();
+})
 
 watch(flag, () => {
   if (flag.value === true) comment();
@@ -210,14 +256,14 @@ watch(flag, () => {
     </div>
 
     <div class="sideBar">
-      <div class="sideBarHeart">
+      <div class="sideBarHeart" :class="{ 'sideBarHeart':!isLike,'sideBarHeart_like':isLike }" @click="eventLike">
         <div><i class="fa-solid fa-heart"></i></div>
-        <div class="sideBarHeartCount">{{ boardInfo.likeCount }}</div>
+        <div class="sideBarHeartCount">{{likeInfo.length }}</div>
       </div>
 
       <div class="sideBarComment">
         <div><i class="fa-solid fa-comment"></i></div>
-        <div class="sideBarCount">{{ boardInfo.commentCount }}</div>
+        <div class="sideBarCount">{{ commentInfo.length }}</div>
       </div>
       <div class="sideBarBookMark">
         <div><i class="fa-solid fa-bookmark"></i></div>
@@ -375,7 +421,23 @@ input {
   border-bottom-right-radius: 50px;
   gap: 10px;
 }
-
+.sideBarHeart_like{
+  color :red;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: inset;
+  box-sizing: border-box;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 24px;
+  cursor: pointer;
+}
 .sideBarHeart {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);

@@ -56,8 +56,10 @@ function delComment(boardId, success, fail) {
 }
 
 function delLike(boardId, param, success, fail) {
+  console.log(param.userId);
+  console.log(boardId);
   instance
-    .delete(`/board/${boardId}/like`, JSON.stringify(param))
+    .delete(`/board/${boardId}/like/${param.userId}`)
     .then(success)
     .catch(fail);
 }
