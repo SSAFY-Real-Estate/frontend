@@ -30,7 +30,9 @@ function getSearchTotalPage(param, success, fail) {
     .then(success)
     .catch(fail);
 }
-
+function getLike(boardId, success, fail) {
+  instance.get(`/board/${boardId}/like`).then(success).catch(fail);
+}
 // function getSearchList()
 
 //post 요청
@@ -41,13 +43,21 @@ function writeComment(boardId, comment, success, fail) {
     .catch(fail);
 }
 
+function writeLike(boardId, param, success, fail) {
+  instance
+    .post(`/board/${boardId}/like`, JSON.stringify(param))
+    .then(success)
+    .catch(fail);
+}
+
+// delete 요청
 function delComment(boardId, success, fail) {
   instance.delete(`/board/${boardId}`).then(success).catch(fail);
 }
 
-function writeLike(boardId, param, success, fail) {
+function delLike(boardId, param, success, fail) {
   instance
-    .post(`/board/${boardId}/like`, JSON.stringify(param))
+    .delete(`/board/${boardId}/like`, JSON.stringify(param))
     .then(success)
     .catch(fail);
 }
@@ -61,4 +71,6 @@ export {
   delComment,
   getSearch,
   writeLike,
+  getLike,
+  delLike,
 };

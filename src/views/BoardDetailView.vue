@@ -7,6 +7,8 @@ import {
   writeComment,
   delComment,
   writeLike,
+  getLike,
+  delLike,
 } from "@/apis/board/board";
 const route = useRoute();
 const router = useRouter();
@@ -17,6 +19,7 @@ const content = ref("");
 const flag = ref(false); // 댓글 작성 성공 여부
 const delFlag = ref(false); // 게시판 삭제 성공여부
 const likeFlag = ref(false); // 좋아요 등록 성공여부
+const delLikeFlag = ref(false); // 좋아요 삭제 성공여부
 const likeInfo = ref([]); // 좋아요 데이터
 const tmpUserId = ref(3); // userId 임시데이터
 const param = ref({
@@ -41,6 +44,32 @@ const like = () => {
     }
   );
 };
+
+// 좋아요 조회
+const gLike = () => {
+  getLike(
+    boardId,
+    ({ data }) => {
+      likeInfo.value = data;
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+// 좋아요 삭제
+const dLike = () => {
+  delLike(
+    boardId,
+    ({ data }) => {
+      delLikeFlag.value = data;
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+
 const detail = () => {
   getDetail(
     boardId,
