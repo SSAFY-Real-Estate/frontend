@@ -1,27 +1,84 @@
 <script setup>
-import { listAllApi } from "@/apis/puthouse/puthouse";
+import { listAllApi, paginationApi } from "@/apis/puthouse/puthouse";
 import BoardCard from "@/components/board/BoardCard.vue";
-import { ref } from "firebase/storage";
-import { onMounted } from "vue";
+import Pagination from "@/components/pagination/Pagination.vue";
+import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 
 const putHouseInfo = ref([]);
 
+const totalCount = ref(0);
+
+const page = ref(1);
+const option = ref(0);
+
+const handleOptionChange = () => {
+  prevOption.value = option.value;
+  option.value = option.value === 0 ? 1 : 0;
+};
+
 const listAll = async() => {
-    const response = listAllApi(router.currentRoute.value.query.page, router.currentRoute.value.query.option);
-    console.log(response);
+  try {
+    const response = await listAllApi(page.value, option.value);
+    putHouseInfo.value = response;
+  } catch (error) {
+    alert('오류가 발생하였습니다. 해당 서비스를 다시 이용해주세요.');
+  }
+}
+
+watch([page], () => {
+  console.log(page.value);
+})
+
+watch([option], () => {
+  console.log(option.value);
+})
+
+watch(
+  () => router.currentRoute.value.query.page,
+  (newValue) => {
+    page.value = router.currentRoute.value.query.page;
+    listAll(); 
+  },
+  { deep: true }
+);
+
+watch(
+  () => router.currentRoute.value.query.option,
+  (newValue) => {
+    option.value = router.currentRoute.value.query.option;
+    listAll(); 
+  },
+  { deep: true }
+);
+
+const listPagination = async() => {
+  try {
+    const response = await paginationApi();
+    totalCount.value = response;
+  } catch (error) {
+    console.log(error)
+    alert('오류가 발생하였습니다. 해당 서비스를 다시 이용해주세요.');
+  }
+}
+
+const trendingClick = () => {
+  page.value = 1;
+  option.value = 1;
+  router.push({query : {page: page.value, option: option.value}});
+}
+
+const descClick = () => {
+  page.value = 1;
+  option.value = 0;
+  router.push({query : {page: page.value, option: option.value}});
 }
 
 onMounted(() => {
-    const page = router.currentRoute.value.query.page || 1;
-    const option = router.currentRoute.value.query.option || 0;
-    router.push({query: {
-        page, option
-    }
-    });
     listAll();
+    listPagination();
 })
 
 </script>
@@ -31,7 +88,7 @@ onMounted(() => {
     <!-- tool bar -->
     <div class="tools">
       <div class="tools_tranding_latest">
-        <div class="tools_trending">
+        <div class="tools_trending" @click="trendingClick">
           <div class="tools_trending_child">
             <img
               class="tools_trending_child_img"
@@ -42,7 +99,7 @@ onMounted(() => {
           <div class="tools_trending_child_text">트랜딩</div>
         </div>
 
-        <div class="tools_latest">
+        <div class="tools_latest" @click="descClick" >
           <div class="tools_latest_child">
             <img
               class="tools_latest_child_img"
@@ -62,7 +119,7 @@ onMounted(() => {
           <!-- </div> -->
         </div>
 
-        <div class="write">
+        <div class="write" @click="router.push({name : 'puthousePosts'})">
           <!-- <div class="write_child"> -->
             <img class="write_child_img" src="../assets/writeLogo.png" />
           <!-- </div> -->
@@ -71,22 +128,14 @@ onMounted(() => {
     </div>
     <!-- board list -->
     <div class="boardList">
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
-      <BoardCard></BoardCard>
+      <BoardCard 
+      v-for="item in putHouseInfo" 
+      :key="item.putHouseId" 
+      :item="item" 
+      @click="router.push({ name: 'puthouseDetail', params: { puthouseid: item.putHouseId, item: item }})"
+      />
     </div>
+    <Pagination :count=15 :page="page" :option="option" :totalCount="totalCount" :path="'/puthouse'"/>
     <!-- page bar -->
     <div></div>
   </div>
@@ -199,3 +248,4 @@ onMounted(() => {
 
 /* 간격 조절 */
 </style>
+

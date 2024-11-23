@@ -31,8 +31,8 @@ watch(() => state._content, (newContent) => {
 </script>
 
 <template>
-    <div>
-        <quillEditor
+    <div id="editorWrap">
+        <quillEditor class="editorTool"
             v-model:value="state.content"
             :options="state.editorOption"
             :disabled="state.disabled"
@@ -42,5 +42,11 @@ watch(() => state._content, (newContent) => {
 </template>
 
 <style scoped>
+    #editorWrap {
+        width: 1200px;
+    }
+    .editorTool {
+        min-height: 600px
+    }
     
 </style>

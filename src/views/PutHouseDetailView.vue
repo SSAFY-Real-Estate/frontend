@@ -1,27 +1,99 @@
-<script setup></script>
+<script setup>
+import { likePutHouseUsersApi, putHouseDetailApi } from '@/apis/puthouse/puthouse';
+import { jwtDecode } from 'jwt-decode';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+
+const props = defineProps({
+  puthouseid: Number
+})
+
+const token = localStorage.getItem('AccessToken');
+const userInfo = ref(null);
+userInfo.value = jwtDecode(token);
+
+const likeUsers = ref([]);
+
+const data = ref({});
+const router = useRouter();
+
+const putHouseDetailShow = async() => {
+  try {
+    const response = await putHouseDetailApi(props.puthouseid);
+    data.value = response;
+  } catch (error) {
+    alert('오류가 발생하였습니다. 해당 서비스를 다시 이용해주세요.');
+  }
+}
+
+const putHouseDetailLikeUsersShow = async() => {
+  try {
+    const response = await likePutHouseUsersApi({
+      putHouseId: props.puthouseid
+    })
+    likeUsers.value = response;
+    console.log(likeUsers.value);
+  } catch (error) {
+    alert('오류가 발생하였습니다. 해당 서비스를 다시 이용해주세요.');
+  }
+}
+
+const formattedUpdateDate = computed(() => {
+  if (data.value.updateDate) {
+    return (
+      data.value.updateDate.substring(0, 4) +
+      '년 ' +
+      data.value.updateDate.substring(5, 7) +
+      '월 ' +
+      data.value.updateDate.substring(8, 10) +
+      '일'
+    );
+  }
+  return '';
+});
+
+const likeClick = async() => {
+  try {
+    if(!userInfo) {
+      if(window.confirm('로그인 가능한 사용자 서비스입니다. 시작페이지로 이동하시겠습니까?')) {
+        router.push({name : 'start'});
+        return;
+      }else {
+        return;
+      }
+    } else {
+
+    }
+
+  } catch (error) {
+    alert('오류가 발생하였습니다. 해당 서비스를 다시 이용해주세요.');
+  }
+}
+
+onMounted(() => {
+  putHouseDetailShow();
+  putHouseDetailLikeUsersShow();
+})
+
+</script>
 
 <template>
   <div class="boardSearch">
-    <div class="title">차니핑 투자 법으로 부동산 재벌된 썰 푼다.</div>
+    <div class="title">{{ data.title }}</div>
 
     <div class="updateAndDate">
-      <div class="updateAndDate_date">2024년 11월 19일 + 닉네임</div>
-
+      <div class="updateAndDate_date"><span class="writerNickname">{{ data.nickname }}</span><span>{{ formattedUpdateDate }}</span></div>
       <div class="updatgeAndDte_update">
-        <button class="updatgeAndDte_update_update">수정</button>
-        <button class="updatgeAndDte_update_delete">삭제</button>
+        <button v-if="userInfo.userId == data.userId" class="updatgeAndDte_update_update">수정</button>
+        <button v-if="userInfo.userId == data.userId" class="updatgeAndDte_update_delete">삭제</button>
       </div>
     </div>
 
     <div class="content">
-      여기서부터 시작하는 텍스트는 의미 없는 한글입니다. 이것은 아무 뜻 없는
-      텍스트입니다. 아무리 읽어도 의미가 없습니다. 사랑과 행복이 가득한 세상에
-      살고 있지만, 이 문장은 그저 아무 의미 없어요. 주어진 글자는 그냥 무의미한
-      글자들일 뿐, 깊은 의미는 없어요. ㅋㅋㅋㅋㅋㅋ, 이 글자는 그냥 텍스트일
-      뿐이에요.
+      {{ data.content }}
     </div>
 
-    <div class="commentCount">9개의 댓글</div>
+    <div class="commentCount">{{ data.commentCount }}개의 댓글</div>
     <div class="comment">
       <div class="comment_pni">
         <div class="comment_profile"></div>
@@ -44,11 +116,11 @@
     <div class="sideBar">
       <div class="sideBarHeart">
         <div><i class="fa-solid fa-heart"></i></div>
-        <div class="sideBarHeartCount">123</div>
+        <div class="sideBarHeartCount">{{ data.likeCount }}</div>
       </div>
       <div class="sideBarComment">
         <div><i class="fa-solid fa-comment"></i></div>
-        <div class="sideBarCount">123</div>
+        <div class="sideBarCount">{{ data.commentCount }}</div>
       </div>
       <div class="sideBarBookMark">
         <div><i class="fa-solid fa-bookmark"></i></div>
@@ -270,4 +342,8 @@ input {
   box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
+.writerNickname {
+  margin-right: 30px;
+  color: #3ebeee;
+}
 </style>

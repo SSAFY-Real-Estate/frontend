@@ -19,7 +19,8 @@ defineProps({ item: Object });
         </div>
         <div class="content_child_content">{{ item.content }}</div>
         <div class="content_child_date">
-          {{ item.updateDate }} {{ item.commentCount }}
+          <span>{{ item.updateDate.substring(0, 4) + '년 ' + item.updateDate.substring(5, 7) + '월 ' + item.updateDate.substring(8, 10) + '일'}} </span>
+          <span>{{ item.commentCount == 0 ? '' : item.commentCount + '개의 댓글' }}</span>
         </div>
       </div>
     </div>
@@ -36,7 +37,7 @@ defineProps({ item: Object });
         <div class="like_like_img">
           <i class="fa-solid fa-heart"></i>
         </div>
-        <div class="like_like_count"></div>
+        <div class="like_like_count">{{ item.likeCount }}</div>
       </div>
     </div>
   </div>
@@ -119,6 +120,7 @@ defineProps({ item: Object });
 
 .content_child_date {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
   padding: 5px 10px;
@@ -135,5 +137,9 @@ defineProps({ item: Object });
   border-bottom: 1px solid #ddd;
   width: 100%;
   height: 45%;
+}
+
+.commenCount {
+  margin-left: 80px;
 }
 </style>
