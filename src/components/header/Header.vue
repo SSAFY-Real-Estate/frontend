@@ -13,7 +13,7 @@ const showUserInfo = ref(null);
 const logOutClick = () => {
     localStorage.removeItem('AccessToken');
     buttonflag.value = false;
-    window.location.reload();
+    window.location.replace('/home/main');
 }
 
 const goMyButtonClick = () => {
@@ -57,9 +57,8 @@ const buttonClick = () => {
         <div class="nav">
             <div class="navMap">지도</div>
             <div class="navAdoptation">분양</div>
-            <div class="navBoard">게시판</div>
             <div class="navKeep" @click="router.push({name : 'zzim'})">찜</div>
-            <div class="navPutHouse" @click="router.push({name : 'puthouse'})">방내놓기</div>
+            <div class="navPutHouse" @click="router.push({name : 'board'})">방내놓기</div>
             <div class="userInfo" @click="buttonClick">
                 <div v-if="userInfo == null" @click="router.push({name : 'start'})">로그인 | 회원가입</div>
                 <div v-if="userInfo" class="userInfoBox">

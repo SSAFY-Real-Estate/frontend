@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   getDetail,
@@ -13,6 +13,8 @@ import {
   writeBookMark,
   getBookMark
 } from "@/apis/board/board";
+import { usePrincipalStore } from "@/stores/principal";
+import { getMyInfoApi } from "@/apis/my/my";
 const route = useRoute();
 const router = useRouter();
 const { boardId } = route.params;
@@ -34,12 +36,36 @@ const bookMarkFlag = ref(false); // 북마크 등록 성공여부
 const delBookMarkFlag = ref(false); // 북마크 삭제 성공 여부
 const getBookMarkFlag = ref(false); // 북마크 조회 성공 여부
 
-const tmpUserId = ref(1); // userId 임시데이터
+const tmpUserId = ref(null); // userId 임시데이터
+
+const principalStore = usePrincipalStore();
+
+const user = computed(() =>  principalStore.user);
+const userIdInfo = ref(null);
+const userInfo = ref(null);
+watch(userIdInfo, () => {
+  param.value.userId = userIdInfo.value;
+  showUserInfo(userIdInfo.value);
+  tmpUserId.value = userIdInfo.value;
+})
+watch(tmpUserId, () => {
+  console.log(tmpUserId.value)
+})
+
+const showUserInfo = async(userId) => {
+  try {
+    const response = await getMyInfoApi(userId);
+    userInfo.value = response;
+    console.log(user.value.authorities[0])
+  } catch (error) {
+    
+  }
+}
 
 //comment parameter
 const param = ref({
-  boardId: 0,
-  userId: 1,
+  boardId: boardId,
+  userId: tmpUserId.value,
   content: "",
 });
 
@@ -52,12 +78,16 @@ const likeParam = ref({
 const bookMarkParam = ref({
   userId: tmpUserId.value
 })
+
 // axios
 // 북마크 등록
 const bookMark = () => {
   writeBookMark(
     boardId,
-    bookMarkParam.value,
+    {
+      userId: userIdInfo.value
+    },
+    // bookMarkParam.value,
     ({ data }) => {
       bookMarkFlag.value = data;
     },
@@ -99,7 +129,9 @@ const gBookMark = () => {
 const like = () => {
   writeLike(
     boardId,
-    likeParam.value,
+    {
+      userId : userIdInfo.value
+    },
     ({ data }) => {
       likeFlag.value = data;
     },
@@ -126,7 +158,9 @@ const gLike = () => {
 const dLike = () => {
   delLike(
     boardId,
-    likeParam.value,
+    {
+      userId: userIdInfo.value
+    },
     ({ data }) => {
       delLikeFlag.value = data;
     },
@@ -160,9 +194,22 @@ const comment = () => {
   );
 };
 
+watch(commentInfo, () => {
+  console.log(commentInfo.value);
+})
+
 const wComment = () => {
+  if(user.value == null) {
+    alert('로그인을 해야 해당 서비스 이용이 가능합니다.')
+    return;
+  }
   writeComment(
     boardId,
+    // {
+    //   boardId: boardId,
+    //   userId: userIdInfo,
+    //   content: param.value.content
+    // },
     param.value,
     ({ data }) => {
       flag.value = data;
@@ -191,7 +238,7 @@ const eventCommentHandle = (event) => {
 const eventComment = () => {
   if (content.value !== "") {
     param.value.content = content.value;
-    param.value.userId = 1; // 나중에 여기 실제 userId 넣어 줘야함
+    param.value.userId = userIdInfo.value; // 나중에 여기 실제 userId 넣어 줘야함
     param.value.boardId = boardId;
     content.value = "";
     console.log(param.value);
@@ -215,6 +262,11 @@ const eventDelete = () => {
   }
 };
 const eventLike = () => {
+  if(user.value == null) {
+    alert('로그인을 해야 해당 서비스 이용이 가능합니다.');
+    return;
+  }
+
   if (isLike.value === false) {
     isLike.value = !isLike.value;
     // 좋아요 등록
@@ -237,6 +289,10 @@ watch(likeFlag, () => {
 }
 );
 const eventBookMark = () => {
+  if(user.value == null) {
+    alert('로그인을 해야 해당 서비스 이용이 가능합니다.');
+    return;
+  }
   if (isBookMark.value === false)
   {
     isBookMark.value = !isBookMark.value;
@@ -251,12 +307,15 @@ const eventBookMark = () => {
 // 처음에 현재 유저가 좋아요 눌렀는지 안눌렀는지 확인
 const initLike = () => {
   for (let item of likeInfo.value) {
-    if (tmpUserId.value == item.userId) {
+    console.log(item)
+    console.log(userIdInfo.value)
+    if (userIdInfo.value == item.userId) {
         isLike.value = true;
         break;
       }
   }
 }
+
 const initBookMark = () => {
   console.log(bookMarkInfo.value.length)
   for (let item of bookMarkInfo.value) {
@@ -272,6 +331,11 @@ onMounted(() => {
   comment();
   gLike();
   gBookMark();
+  initLike();
+  principalStore.fetchUser();
+  if(!user) {
+    userIdInfo.value = user.value.userId;
+  }
 });
 watch(initFalg, () => {
   if(initFalg.value === true) initLike();
@@ -283,6 +347,32 @@ watch(flag, () => {
   if (flag.value === true) comment();
   flag.value = false;
 });
+
+const formattedUpdateDate = computed(() => {
+  if (boardInfo.value.updateDate) {
+    return (
+      boardInfo.value.updateDate.substring(0, 4) +
+      '년 ' +
+      boardInfo.value.updateDate.substring(5, 7) +
+      '월 ' +
+      boardInfo.value.updateDate.substring(8, 10) +
+      '일'
+    );
+  }
+  return '';
+});
+
+const formattedUpdateDateComment = (date) => {
+  return (
+    date.substring(0, 4) +
+      '년 ' +
+    date.substring(5, 7) +
+      '월 ' +
+    date.substring(8, 10) +
+      '일'
+  )
+}
+
 </script>
 <template>
   <div class="boardSearch">
@@ -290,10 +380,11 @@ watch(flag, () => {
 
     <div class="updateAndDate">
       <div class="updateAndDate_date">
-        {{ boardInfo.createDate }} + {{ boardInfo.Id }}
+        <span>{{ formattedUpdateDate }}</span>
+        <span class="writerNickname">{{ boardInfo.nickname }}</span>
       </div>
 
-      <div class="updatgeAndDte_update">
+      <div v-if="boardInfo.userId == userIdInfo" class="updatgeAndDte_update" >
         <button class="updatgeAndDte_update_update">수정</button>
         <button class="updatgeAndDte_update_delete" @click="eventDelete">
           삭제
@@ -301,23 +392,29 @@ watch(flag, () => {
       </div>
     </div>
 
-    <div class="content">
-      {{ boardInfo.content }}
-    </div>
+    <div class="content" v-html="boardInfo.content"></div>
 
     <div class="commentCount">{{ commentInfo.length }} 개의 댓글</div>
 
-    <div v-for="item in commentInfo" :key="item.commentId" class="comment">
-      <div class="comment_pni">
-        <div class="comment_profile"></div>
-        <div class="comment_ni">
-          <div class="comment_name">{{ item.nickname }}</div>
-          <div class="comment_idAndDate">{{ item.createDate }}</div>
+    <div class="commentWrap">
+      <div v-for="item in commentInfo" :key="item.commentId" class="comment">
+        <div class="comment_pni">
+          <div class="comment_profile">
+            <div v-if="item?.profileImgUrl==''" class="defaultProfile">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <img v-if="item?.profileImgUrl!=''" :src="userInfo?.profileImgUrl" alt="profileImgUrl" class="profileImg">
+          </div>
+          <div class="comment_ni">
+            <div class="comment_name">{{ item.nickname }}</div>
+            <div class="comment_idAndDate">{{ formattedUpdateDateComment(item.createDate)}}</div>
+          </div>
         </div>
+        <div class="comment_content">{{ item.content }}</div>
       </div>
-      <div class="comment_content">{{ item.content }}</div>
     </div>
-
+    
+    
     <div class="commentWrite">
       <div class="commentWrite_input">
         <input
@@ -381,29 +478,49 @@ input {
   margin-top: 10px;
   margin-bottom: 30px;
   width: 1050px;
-  height: 75px;
+  height: 100px;
   box-sizing: border-box;
-  border: 1px solid black;
+  border: 1px solid #ccc;
+  border-radius: 9px;
 }
+.commentWrite_input input {
+font-size: 30px;
+}
+
 .commentWrite_button_button {
   margin-bottom: 20px;
   background-color: #3ebeee;
   width: 125px;
-  height: 75px;
+  height: 100px;
   font-size: 25px;
   border-radius: 10%;
   border: none;
+  box-sizing: border-box;
 }
 
 .commentCount {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 20px 0;
+  margin-top: 50px;
   margin-bottom: 20px;
   font-size: 20px;
+  box-sizing: border-box;
+}
+.commentWrap {
+  width: 100%;
+  max-height: 500px;
+  overflow: auto;
 }
 .comment {
+  width: 100%;
+  height: 100px;
+  overflow: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
 }
 .comment_pni {
   display: flex;
@@ -411,11 +528,31 @@ input {
 }
 
 .comment_profile {
-  border: 1px solid black;
+  /* border: 1px solid black; */
   width: 50px;
   height: 50px;
   border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.defaultProfile {
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 35px;
+}
+
+.profileImg {
+  width: 100%;
+  border-radius: 50%;
+}
+
 .comment_ni {
   margin-left: 10px;
 }
@@ -435,14 +572,19 @@ input {
 }
 
 .updateAndDate_date {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
   font-size: 30px;
 }
 
 .updatgeAndDte_update {
+  margin-left: 20px;
   width: 215px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 .updatgeAndDte_update_update {
   background-color: #3ebeee;
@@ -501,7 +643,7 @@ input {
   gap: 10px;
 }
 .sideBarHeart_like{
-  color :red;
+  color :#3ebeee;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
@@ -559,7 +701,7 @@ input {
   font-size: 12px;
 }
 .sideBarBookMark_on{
-  color: red;
+  color: #3ebeee;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
