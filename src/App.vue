@@ -28,8 +28,8 @@ onMounted(() => {
 <template>
   <div id="wrap">
     <Header v-if="route.currentRoute.value.path !== '/'" />
-    <!-- <RouterView /> -->
-    <MapView />
+    <RouterView />
+    <!-- <MapView /> -->
   </div>
 </template>
 
