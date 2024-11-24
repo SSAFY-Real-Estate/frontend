@@ -1,8 +1,12 @@
 <script setup>
-import { KakaoMap, KakaoMapMarker,KakaoMapCustomOverlay } from "vue3-kakao-maps";
+import {
+  KakaoMap,
+  KakaoMapMarker,
+  KakaoMapCustomOverlay,
+} from "vue3-kakao-maps";
 import { onMounted, ref, watch, onBeforeMount } from "vue";
-import { isKakaoMapApiLoaded } from 'vue3-kakao-maps/@utils';
-import { getLocation,getDoLocation } from "@/apis/map/map";
+import { isKakaoMapApiLoaded } from "vue3-kakao-maps/@utils";
+import { getLocation, getDoLocation } from "@/apis/map/map";
 const corInfo = ref([]); // 좌표 data
 const map = ref();
 const location = ref({
@@ -35,13 +39,13 @@ const gDoLocation = () => {
     location.value,
     ({ data }) => {
       corInfo.value = data;
-      console("잘들어왔습니다.")
+      console("잘들어왔습니다.");
     },
-    (error) =>{
+    (error) => {
       console.log(error);
     }
-  )
-}
+  );
+};
 const onLoadKakaoMap = (mapRef) => {
   map.value = mapRef;
   console.log("map");
@@ -49,7 +53,7 @@ const onLoadKakaoMap = (mapRef) => {
 
 const getInfo = () => {
   if (map.value) {
-    console.log("지도정보를 가져옵니다.")
+    console.log("지도정보를 가져옵니다.");
     const bounds = map.value.getBounds();
     const swLatLng = bounds.getSouthWest();
     const neLatLng = bounds.getNorthEast();
@@ -58,7 +62,7 @@ const getInfo = () => {
     location.value.neLat = neLatLng.getLat();
     location.value.neLng = neLatLng.getLng();
   }
-}
+};
 
 watch(map, () => {
   let level = map.value.getLevel();
@@ -67,8 +71,7 @@ watch(map, () => {
       if (level <= 10 && level >= 5) {
         getInfo();
         gDoLocation();
-      }
-      else {
+      } else {
         getInfo();
         gLoction();
       }
@@ -79,8 +82,7 @@ watch(map, () => {
       if (level <= 10 && level >= 5) {
         getInfo();
         gDoLocation();
-      } 
-      else {
+      } else {
         getInfo();
         gLoction();
       }
@@ -91,13 +93,15 @@ watch(map, () => {
 
 // 동적 html
 const dynamicHtml = (info) => {
-  if (info.className === "do") return `${info.name || 'Marker'}`
-  else return `<div>실험을 해봅시다.</div>`
-}
-
+  if (info.className === "do") return `${info.name || "Marker"}`;
+  else
+    return `  <div class="apt_main">
+    <div class="apt_py">${info.excluUseAr}평</div>
+    <div class="apt_price">${info.dealAmount}억</div>
+  </div>`;
+};
 </script>
 <template>
-  <button @click="getInfo">누르세요</button>
   <KakaoMap
     width="1050px"
     height="550px"
@@ -106,16 +110,15 @@ const dynamicHtml = (info) => {
     :level="10"
     @onLoadKakaoMap="onLoadKakaoMap"
   >
-  <KakaoMapCustomOverlay
+    <KakaoMapCustomOverlay
       v-for="(info, index) in corInfo"
       :key="index"
       :lat="info.lat"
       :lng="info.lng"
       :content="`<div class='${info.className}'>${dynamicHtml(info)}</div>`"
     />
-
-</KakaoMap>
-  <div>{{corInfo}}</div>
+  </KakaoMap>
+  <div>{{ corInfo }}</div>
 </template>
 <style>
 .do {
@@ -124,13 +127,38 @@ const dynamicHtml = (info) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color:  #3ebeee;
+  background-color: #3ebeee;
   color: white;
   border-radius: 9px;
 }
 
-.apt{
-  width: 110px;
-  height: 30px;
+.apt_main {
+  box-sizing: border-box;
+  border: 2px solid #3ebeee;
+  border-radius: 5px;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+}
+
+.apt_py {
+  box-sizing: border-box;
+  font-size: 11px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #3ebeee;
+  border-bottom: #3ebeee;
+  height: 50%;
+}
+
+.apt_price {
+  height: 50%;
+  box-sizing: border-box;
+  font-size: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

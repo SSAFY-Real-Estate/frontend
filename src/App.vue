@@ -14,7 +14,7 @@ import { useRouter } from "vue-router";
 import test from "./views/test.vue";
 import { computed, onMounted } from "vue";
 import { jwtDecode } from "jwt-decode";
-
+import drwaing from "@/components/board/drwaing.vue";
 const route = useRouter();
 
 onMounted(() => {
@@ -28,8 +28,9 @@ onMounted(() => {
 <template>
   <div id="wrap">
     <Header v-if="route.currentRoute.value.path !== '/'" />
-    <RouterView />
-    <!-- <MapView /> -->
+    <!-- <RouterView /> -->
+    <MapView />
+    <!-- <drwaing /> -->
   </div>
 </template>
 
