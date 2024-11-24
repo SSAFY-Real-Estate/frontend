@@ -72,7 +72,8 @@ const writeBoardClick = async() => {
         content: state._content,
       });
       console.log(response);
-      alert('게시글 작성 성공!!!')
+      alert('게시물이 성공적으로 작성되었습니다.');
+      router.push({name : 'board'})
     
   } catch (error) {
       alert('실패')

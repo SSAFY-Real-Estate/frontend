@@ -52,6 +52,8 @@ watch(tmpUserId, () => {
   console.log(tmpUserId.value)
 })
 
+
+
 const showUserInfo = async(userId) => {
   try {
     const response = await getMyInfoApi(userId);
@@ -75,9 +77,9 @@ const likeParam = ref({
 });
 
 // bookmark parameter
-const bookMarkParam = ref({
-  userId: tmpUserId.value
-})
+// const bookMarkParam = ref({
+//   userId: user.value.userId
+// })
 
 // axios
 // 북마크 등록
@@ -85,7 +87,7 @@ const bookMark = () => {
   writeBookMark(
     boardId,
     {
-      userId: userIdInfo.value
+      userId: user.value.userId
     },
     // bookMarkParam.value,
     ({ data }) => {
@@ -101,7 +103,8 @@ const bookMark = () => {
 const dBookMark = () => {
   delBookMark(
     boardId,
-    bookMarkParam.value,
+    // bookMarkParam.value,
+    user.value.userId,
     ({ data }) => {
       delBookMarkFlag.value = data;
     },
@@ -127,10 +130,14 @@ const gBookMark = () => {
 }
 // 좋아요 등록
 const like = () => {
+  if(user == null) {
+    alert('로그인을 해야 해당 서비스 이용이 가능합니다.')
+    return;
+  }
   writeLike(
     boardId,
     {
-      userId : userIdInfo.value
+      userId : user.value.userId
     },
     ({ data }) => {
       likeFlag.value = data;
@@ -156,10 +163,14 @@ const gLike = () => {
 };
 // 좋아요 삭제
 const dLike = () => {
+  if(user == null) {
+    alert('로그인을 해야 해당 서비스 이용이 가능합니다.')
+    return;
+  }
   delLike(
     boardId,
     {
-      userId: userIdInfo.value
+      userId: user.value.userId
     },
     ({ data }) => {
       delLikeFlag.value = data;
@@ -203,14 +214,23 @@ const wComment = () => {
     alert('로그인을 해야 해당 서비스 이용이 가능합니다.')
     return;
   }
+  // alert(user.value.userId)
+  const qwe = {
+    boardId : boardId,
+    userId : user.value.userId,
+    content : param.value.content
+  }
+  // alert(qwe.boardId);
+  // alert(qwe.userId);
+  alert(qwe.content);
   writeComment(
     boardId,
     // {
     //   boardId: boardId,
-    //   userId: userIdInfo,
+    //   userId: user.value.userId,
     //   content: param.value.content
     // },
-    param.value,
+    qwe,
     ({ data }) => {
       flag.value = data;
     },
@@ -284,7 +304,10 @@ watch(delLikeFlag, () => {
 })
 
 watch(likeFlag, () => {
-  if (likeFlag.value === true) gLike();
+  if (likeFlag.value === true) {
+    gLike();
+    return;
+  }
   likeFlag.value = false;
 }
 );
@@ -309,7 +332,7 @@ const initLike = () => {
   for (let item of likeInfo.value) {
     console.log(item)
     console.log(userIdInfo.value)
-    if (userIdInfo.value == item.userId) {
+    if (user.value.userId == item.userId) {
         isLike.value = true;
         break;
       }
@@ -319,7 +342,7 @@ const initLike = () => {
 const initBookMark = () => {
   console.log(bookMarkInfo.value.length)
   for (let item of bookMarkInfo.value) {
-    if (tmpUserId.value === item.userId) {
+    if (user.value.userId === item.userId) {
       isBookMark.value = true;
       break;
     }
@@ -373,6 +396,20 @@ const formattedUpdateDateComment = (date) => {
   )
 }
 
+watch(param.value.content, () => {
+  param.value.userId = user.value.userId;
+  console.log(rrrr);
+})
+
+const goToUpdate = () => {
+  router.push({
+    name: "boardUpdate",
+    params: {
+      boardId: boardId
+    }
+  })
+}
+
 </script>
 <template>
   <div class="boardSearch">
@@ -384,8 +421,8 @@ const formattedUpdateDateComment = (date) => {
         <span class="writerNickname">{{ boardInfo.nickname }}</span>
       </div>
 
-      <div v-if="boardInfo.userId == userIdInfo" class="updatgeAndDte_update" >
-        <button class="updatgeAndDte_update_update">수정</button>
+      <div v-if="boardInfo.userId == user?.userId" class="updatgeAndDte_update" >
+        <button class="updatgeAndDte_update_update" @click="goToUpdate">수정</button>
         <button class="updatgeAndDte_update_delete" @click="eventDelete">
           삭제
         </button>
@@ -403,7 +440,7 @@ const formattedUpdateDateComment = (date) => {
             <div v-if="item?.profileImgUrl==''" class="defaultProfile">
               <i class="fa-solid fa-user"></i>
             </div>
-            <img v-if="item?.profileImgUrl!=''" :src="userInfo?.profileImgUrl" alt="profileImgUrl" class="profileImg">
+            <img v-if="item?.profileImgUrl!=''" :src="item?.profileImgUrl" alt="profileImgUrl" class="profileImg">
           </div>
           <div class="comment_ni">
             <div class="comment_name">{{ item.nickname }}</div>

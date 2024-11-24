@@ -9,6 +9,9 @@ import PutHouseListView from '@/views/PutHouseListView.vue'
 import PutHouseWrite from '@/views/PutHouseWrite.vue'
 import Zzim from '@/views/Zzim.vue'
 import BoardWriteView from "@/views/BoardWriteView.vue";
+import BoardUpdateView from "@/views/BoardUpdateView.vue";
+import NoticeDetail from "@/views/NoticeDetail.vue";
+import NoticeList from "@/views/NoticeList.vue";
 
 
 const router = createRouter({
@@ -53,17 +56,32 @@ const router = createRouter({
     {
       path: '/my',
       name: 'my',
-      component: My
+      component: My,
     },
     {
       path: '/zzim',
       name: 'zzim',
-      component: Zzim
+      component: Zzim,
+    },
+    {
+      path: '/board/update/:boardId',
+      name: 'boardUpdate',
+      component: BoardUpdateView,
     },
     {
       path: '/board/write',
       name: 'boardWrite',
       component: BoardWriteView
+    },
+    {
+      path: '/notice/:noticeId',
+      name: 'noticeDetail',
+      component: NoticeDetail
+    },
+    {
+      path: '/notice',
+      name: 'noticeList',
+      component: NoticeList
     }
   ],
 });

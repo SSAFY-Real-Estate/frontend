@@ -18,6 +18,8 @@ const totalPageCount = ref(0); // 데이터 총 개수
 const onePageCout = ref(3); // 받아올 페이지
 const word = ref(""); // 검색이 된 상태인지 아닌지.
 
+const searchButton = ref(false);
+
 const param = ref({
   page: currentPage.value,
   option: currentOption.value,
@@ -142,7 +144,7 @@ onMounted(() => {
               alt="trendingLogo"
             />
           </div>
-          <div class="tools_trending_child_text" @click="trending()">
+          <div :class="param.option == 1 ? 'textActive' : ''" class="tools_trending_child_text" @click="trending()">
             트랜딩
           </div>
         </div>
@@ -155,12 +157,12 @@ onMounted(() => {
               alt="timeDescLogo"
             />
           </div>
-          <div class="tools_latest_child_text" @click="trending()">최신</div>
+          <div :class="param.option == 0 ? 'textActive' : ''" class="tools_latest_child_text" @click="trending()">최신</div>
         </div>
       </div>
 
       <div class="tools_search_write">
-        <div class="search">
+        <div class="search" @click="searchButton = !searchButton">
           <!-- <div class="search_child"> -->
           <!-- <img class="search_child_img" src="../assets/timeDescLogo.png" /> -->
           <i class="fa-solid fa-magnifying-glass search_child_img"></i>
@@ -175,12 +177,15 @@ onMounted(() => {
       </div>
     </div>
     <!--search bar-->
-    <div class="searchBar">
+    <div v-if="searchButton">
+      <div class="searchBar">
       <SearchBar @search="eventSearch" />
+      </div>
+      <div class="searchBar_number">
+        총 {{ totalPageCount }}개의 포스트를 찾았습니다.
+      </div>
     </div>
-    <div class="searchBar_number">
-      총 {{ totalPageCount }}개의 포스트를 찾았습니다.
-    </div>
+    
     <!-- board list -->
     <div class="boardList">
       <BoardCard
@@ -319,6 +324,10 @@ onMounted(() => {
 .tools_latest_child_text {
   margin-left: 10px;
   font-size: 30px;
+}
+
+.textActive {
+  color: #3EBEEE;
 }
 
 /* 간격 조절 */

@@ -11,7 +11,8 @@ const eventSearch = (event) => {
 <template>
   <div class="searchBar">
     <div class="searchBar_img">
-      <img src="../../assets/apartLogo.png" width="30px" height="30px" />
+      <i class="fa-solid fa-magnifying-glass search_child_img"></i>
+      <!-- <img src="../../assets/apartLogo.png" width="30px" height="30px" /> -->
     </div>
     <div class="searchBar_input">
       <input type="text" @keyup="eventSearch" v-model="textSearch" />
@@ -33,11 +34,13 @@ input {
   height: 70px;
   box-sizing: border-box;
   padding-right: 50px;
-  border: 2px solid black;
+  border: 1px solid #ccc;
+  border-radius: 9px;
   padding: 20px;
 }
 .searchBar_img {
   margin-left: 15px;
+  font-size: 35px;
 }
 .searchBar_input {
   margin-left: 40px;

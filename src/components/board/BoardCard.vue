@@ -1,5 +1,12 @@
 <script setup>
+import { imgRegex } from '@/constants/firebaseRegex';
+import { onMounted, ref, watch } from 'vue';
+
 defineProps({ item: Object });
+
+const regex = /^data:image\/.*$/;
+
+
 </script>
 
 <template>
@@ -17,7 +24,7 @@ defineProps({ item: Object });
         <div class="content_child_title">
           <h4>{{ item.title }}</h4>
         </div>
-        <div class="content_child_content">{{ item.content }}</div>
+        <!-- <div class="content_child_content">{{ item.content }}</div> -->
         <div class="content_child_date">
           <span>{{ item.updateDate.substring(0, 4) + '년 ' + item.updateDate.substring(5, 7) + '월 ' + item.updateDate.substring(8, 10) + '일'}} </span>
           <span>{{ item.commentCount == 0 ? '' : item.commentCount + '개의 댓글' }}</span>
@@ -108,7 +115,7 @@ defineProps({ item: Object });
   box-sizing: border-box;
   width: 100%;
   height: 30px;
-  font-size: 18px;
+  font-size: 20px;
 }
 .content_child_content {
   padding: 5px 10px;
@@ -119,6 +126,7 @@ defineProps({ item: Object });
 }
 
 .content_child_date {
+  margin-top: 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;

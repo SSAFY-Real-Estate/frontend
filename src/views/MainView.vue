@@ -1,80 +1,92 @@
 <script setup>
 import { useRouter } from 'vue-router';
-
+// import NoticeTable from '@/components/board/NoticeTable.vue';
+import NoticeMainCard from '@/components/board/\bNoticeMainCard.vue';
 const router = useRouter();
 </script>
 <template>
     <div id="mainViewWrap">
-        <div class="mainLeft">
-            <div class="mainLeftTop">
-                <div class="oneTwoRoom">
-                    <h1>원/투룸</h1>
-                    <p>주택/빌라, 오피스텔, 아파트까지<br> 모든 전월세 매물을 한번에!</p>
-                    <div class="roomLogoBox">
-                        <img src="../assets/roomLogo.png" alt="roomLogo">
+        <div class="top">
+
+            <div class="mainLeft">
+                <div class="mainLeftTop">
+                    <div class="oneTwoRoom">
+                        <h1>원/투룸</h1>
+                        <p>주택/빌라, 오피스텔, 아파트까지<br> 모든 전월세 매물을 한번에!</p>
+                        <div class="roomLogoBox">
+                            <img src="../assets/roomLogo.png" alt="roomLogo">
+                        </div>
+                    </div>
+                    <div class="apart">
+                        <h1>아파트</h1>
+                        <p>가장 빠른 실거래가 알림!<br>풍부한 단지정보 및 실시간 랭킹까지!</p>
+                        <div class="apartLogoBox">
+                            <img src="../assets/apartLogo.png" alt="apartLogo">
+                        </div>
                     </div>
                 </div>
-                <div class="apart">
-                    <h1>아파트</h1>
-                    <p>가장 빠른 실거래가 알림!<br>풍부한 단지정보 및 실시간 랭킹까지!</p>
-                    <div class="apartLogoBox">
-                        <img src="../assets/apartLogo.png" alt="apartLogo">
+                <div class="mainLeftBottom">
+                    <div class="house">
+                        <h1>주택/빌라</h1>
+                        <p>전월세부터<br>매매까지<br>모~든 매물!</p>
+                        <div class="houseLogoBox">
+                            <img src="../assets/houseLogo.png" alt="houseLogo">
+                        </div>
+                    </div>
+                    <div class="officetel">
+                        <h1>오피스텔</h1>
+                        <p>다양한 정보와<br>다양한 매물!</p>
+                        <div class="officetelLogoBox">
+                            <img src="../assets/OfficetelLogo.png" alt="officetelLogo">
+                        </div>
+                    </div>
+                    <div class="adoptation">
+                        <h1>분양</h1>
+                        <p>전국의 모든<br>분양/입주 정보<br>확인 가능!</p>
+                        <div class="adoptationLogoBox">
+                            <img src="../assets/adoptationLogo.png" alt="adoptationLogo">
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="mainLeftBottom">
-                <div class="house">
-                    <h1>주택/빌라</h1>
-                    <p>전월세부터<br>매매까지<br>모~든 매물!</p>
-                    <div class="houseLogoBox">
-                        <img src="../assets/houseLogo.png" alt="houseLogo">
+            <div class="mainRight">
+                <div class="mainRightTop">
+                    <div class="news">
+                        <h1>부동산 최근 뉴스를 한번에!</h1>
+                        <div class="newsLogoBox">
+                            <img src="../assets/newsLogo.png" alt="newsLogo">
+                        </div>
                     </div>
                 </div>
-                <div class="officetel">
-                    <h1>오피스텔</h1>
-                    <p>다양한 정보와<br>다양한 매물!</p>
-                    <div class="officetelLogoBox">
-                        <img src="../assets/OfficetelLogo.png" alt="officetelLogo">
+                <div class="mainRightBottom">
+                    <div class="myList">
+                        <h1>찜</h1>
+                        <div class="myListBox">
+                            <img src="../assets/myListLogo.png" alt="myListLogo">
+                        </div>
                     </div>
-                </div>
-                <div class="adoptation">
-                    <h1>분양</h1>
-                    <p>전국의 모든<br>분양/입주 정보<br>확인 가능!</p>
-                    <div class="adoptationLogoBox">
-                        <img src="../assets/adoptationLogo.png" alt="adoptationLogo">
+                    <div class="putHouse" @click="router.push({name : 'board'})">
+                        <h1>방내놓기</h1>
+                        <div class="putHouseBox">
+                            <img src="../assets/putHouseLogo.png" alt="putHouseLogo">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="mainRight">
-            <div class="mainRightTop">
-                <div class="news">
-                    <h1>부동산 최근 뉴스를 한번에!</h1>
-                    <div class="newsLogoBox">
-                        <img src="../assets/newsLogo.png" alt="newsLogo">
-                    </div>
-                </div>
-            </div>
-            <div class="mainRightBottom">
-                <div class="myList">
-                    <h1>찜</h1>
-                    <div class="myListBox">
-                        <img src="../assets/myListLogo.png" alt="myListLogo">
-                    </div>
-                </div>
-                <div class="putHouse" @click="router.push({name : 'board'})">
-                    <h1>방내놓기</h1>
-                    <div class="putHouseBox">
-                        <img src="../assets/putHouseLogo.png" alt="putHouseLogo">
-                    </div>
-                </div>
-            </div>
+        <div>
+            <NoticeMainCard/>
         </div>
     </div>
 </template>
 <style scoped>
     #mainViewWrap {
         width: 1400px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .top {
         display: flex;
         gap: 10px;
     }
