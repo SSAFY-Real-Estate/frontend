@@ -8,6 +8,7 @@ import PutHouseDetailView from '@/views/PutHouseDetailView.vue'
 import PutHouseListView from '@/views/PutHouseListView.vue'
 import PutHouseWrite from '@/views/PutHouseWrite.vue'
 import Zzim from '@/views/Zzim.vue'
+import BoardWriteView from "@/views/BoardWriteView.vue";
 
 
 const router = createRouter({
@@ -58,6 +59,11 @@ const router = createRouter({
       path: '/zzim',
       name: 'zzim',
       component: Zzim
+    },
+    {
+      path: '/board/write',
+      name: 'boardWrite',
+      component: BoardWriteView
     }
   ],
 });

@@ -167,7 +167,7 @@ onMounted(() => {
           <!-- </div> -->
         </div>
 
-        <div class="write">
+        <div class="write" @click="router.push({name : 'boardWrite'})">
           <!-- <div class="write_child"> -->
           <img class="write_child_img" src="../assets/writeLogo.png" />
           <!-- </div> -->

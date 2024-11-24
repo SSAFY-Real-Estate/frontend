@@ -190,39 +190,35 @@ const handleFileChange = (e) => {
                     <div v-if="userInfo?.profileImgUrl==''" class="defaultProfile">
                         <i class="fa-solid fa-user"></i>
                     </div>
-                    <img v-if="userInfo?.profileImgUrl!=''" :src="userInfo?.profileImgUrl" alt="">
+                    <img v-if="userInfo?.profileImgUrl!=''" :src="userInfo?.profileImgUrl" alt="profileImgUrl">
                 </div>
-                <input type="file" @change="handleFileChange">
+                <input class="fileInput" type="file" @change="handleFileChange">
             </div>
             <div class="newNicknameBox">
-                <input type="text" @keyup="nicknameUpdateEnter" v-model="updateNickname" placeholder="변경할 닉네임">
-                <button class="idCheckButton" @click="nicknameValidationClick">중복확인</button>
-                <p v-if="updateNickname">{{ validationMessage.nicknameValidation }}</p>
+                <div>
+                    <input type="text" @keyup="nicknameUpdateEnter" v-model="updateNickname" placeholder="변경할 닉네임">
+                    <button class="idCheckButton" @click="nicknameValidationClick">중복확인</button>
+                </div>
+                <p :class="updateNicknameFlag ? 'correct' : 'fail'" v-if="updateNickname">{{ validationMessage.nicknameValidation }}</p>
             </div>
             <div class="showIdBox">
                 <input type="text" :value="user?.id" disabled class="showId">
             </div>
             <div class="newPasswordBox">
                 <input type="password" v-model="updatePassword" class="newPassword" placeholder="변경할 비밀번호">
-                <p v-if="updatePassword">{{ validationMessage.passValidation }}</p>
+                
             </div>
             <div class="newPasswordCheckBox">
                 <input type="password" @keyup="updateUserInfoEnter" v-model="updatePasswordCheck" class="newPasswordCheck" placeholder="변경할 비밀번호 확인">
+                <p :class="updatePasswordFlag ? 'correct' : 'fail'" v-if="updatePassword">{{ validationMessage.passValidation }}</p>
             </div>
             <div class="emailBox">
                 <input type="text" :value="userInfo?.email" class="emailInfo" disabled>
             </div>
-            <div>
+            <div class="buttonBox">
                 <button class="updateUserInfoButton" @click="updateUserInfoClick">회원정보 수정</button>
             </div>
         </div>
-        <!-- <div>
-            <h1>회원정보 수정을 위해<br>기본 비밀번호를 입력해주세요.</h1>
-            <div>
-                <button>확인</button>
-                <button>취소</button>
-            </div>
-        </div> -->
     </div>
 </template>
 
@@ -231,10 +227,19 @@ const handleFileChange = (e) => {
         width: 1400px;
         display: flex;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    h1 {
+        width: 100%;
+        margin-bottom: 50px;
+        font-size: 50px;
     }
     .userInfoBox {
         width: 960px;
         display: flex;
+        justify-content: center;
+        align-items: center;
         flex-direction: column;
         margin: 0 auto;
     }
@@ -252,5 +257,149 @@ const handleFileChange = (e) => {
         font-size: 100px;
         border: 1px solid #ccc;
         border-radius: 50%;
+    }
+    .profileImgBox {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+    .fileInput {
+        padding-left: 180px;
+    }
+    .newNicknameBox {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+        flex-direction: column;
+    }
+    .newNicknameBox > div {
+        display: flex;
+        gap: 10px;
+        width: 600px;
+    }
+    .newNicknameBox > div > input {
+        width: 80%;
+        height: 80px;
+        padding: 10px;
+        box-sizing: border-box;
+        border-radius: 9px;
+        border: 1px solid #ccc;
+        font-size: 20px;
+    }
+    .newNicknameBox > div > button {
+        width: 20%;
+        height: 80px;
+        border-radius: 9px;
+        background-color: #3ebeee;
+        transition: all 0.3s;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    .newNicknameBox > div > button:hover {
+        opacity: 0.8;
+    }
+    .newNicknameBox > p {
+        margin: 10px 0;
+        width: 600px;
+    }
+    .correct {
+        color: green;
+    }
+    .fail {
+        color: red;
+    }
+    .showIdBox {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .showIdBox > input {
+        width: 600px;
+        height: 80px;
+        border-radius: 9px;
+        border: 1px solid #ccc;
+        font-size: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    .newPasswordBox {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+    .newPasswordBox > input {
+        width: 600px;
+        height: 80px;
+        border-radius: 9px;
+        border: 1px solid #ccc;
+        font-size: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    .newPasswordCheckBox > p {
+        width: 600px;
+        margin: 10px 0;
+    }
+    .newPasswordCheckBox {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+    .newPasswordCheckBox > input {
+        width: 600px;
+        height: 80px;
+        border-radius: 9px;
+        border: 1px solid #ccc;
+        font-size: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    .emailBox {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .emailBox > input {
+        width: 600px;
+        height: 80px;
+        border-radius: 9px;
+        border: 1px solid #ccc;
+        font-size: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    .buttonBox {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    .updateUserInfoButton {
+        width: 600px;
+        height: 80px;
+        background-color: #3ebeee;
+        border: none;
+        border-radius: 9px;
+        font-size: 20px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    .updateUserInfoButton:hover {
+        opacity: 0.8;
     }
 </style>

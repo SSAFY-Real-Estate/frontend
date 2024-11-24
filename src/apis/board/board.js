@@ -1,4 +1,5 @@
 import { instance } from "@/apis/utils/instance";
+import axios from "axios";
 
 // get 요청
 function getListAll(param, success, fail) {
@@ -99,3 +100,8 @@ export {
   writeBookMark,
   getBookMark
 };
+
+export const writeBoardApi = async(data) => {
+  const response =  await instance.post('/board/posts', data);
+  return response.data
+}

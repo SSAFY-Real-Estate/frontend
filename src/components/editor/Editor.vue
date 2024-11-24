@@ -14,18 +14,19 @@ const state = reactive({
     disabled: false
 })
 
+const emit = defineEmits(['update:content']);
+
 const onEditorChange = ({ quill, html, text }) => {
       console.log('editor change!', html)
       state._content = html
+      emit('update:content', html)
 }
 
 watch(() => state._content, (newContent) => {
-    console.log(newContent);
     const result = newContent.match(imgRegex); // 모든 매칭 결과 배열로 반환
-    // console.log(result.length);
-    console.log(typeof(state._content))
-    console.log(state._content.match(imgRegex))
-    
+    // console.log(typeof(state._content))
+    // console.log(state.content);
+    // console.log(state._content.match(imgRegex))
 })
 
 </script>
@@ -46,7 +47,8 @@ watch(() => state._content, (newContent) => {
         width: 1200px;
     }
     .editorTool {
-        min-height: 600px
+        min-height: 600px;
+        font-size: 35px;
     }
     
 </style>
