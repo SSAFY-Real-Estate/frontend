@@ -2,17 +2,20 @@
 import Editor from '@/components/editor/Editor.vue';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { imgRegex } from '@/constants/firebaseRegex';
-import { QUILL_MODULES } from '@/constants/quillModules.';
+import { QUILL_MODULES } from '@/constants/quillModules';
 import { quillEditor } from 'vue3-quill';
 import { ref as firebaseRef, getDownloadURL, uploadString } from 'firebase/storage';
 import { storage } from '@/apis/firebase/firebaseConfig';
 import { v4 as uuid } from 'uuid';
 import { writeBoardApi } from '@/apis/board/board';
 import { usePrincipalStore } from '@/stores/principal';
+import { useRouter } from 'vue-router/dist/vue-router';
+
 
 const principalStore = usePrincipalStore();
 
 const user = computed(() => principalStore.user);
+const router = useRouter();
 
 onMounted(() => {
   principalStore.fetchUser();
@@ -65,7 +68,8 @@ const writeBoardClick = async() => {
     return;
   }
 
-  try {
+  if(window.confirm('해당 게시물을 작성하시겠습니까?')) {
+    try {
       const response = await writeBoardApi({
         userId: user.value.userId,
         title: boardTitle.value,
@@ -73,11 +77,14 @@ const writeBoardClick = async() => {
       });
       console.log(response);
       alert('게시물이 성공적으로 작성되었습니다.');
-      router.push({name : 'board'})
+      router.push({name : 'board'});
     
   } catch (error) {
-      alert('실패')
+      console.log(error);
   }
+  }
+
+  
 }
 
 watch(boardTitle, () => {

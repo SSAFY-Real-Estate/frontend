@@ -103,5 +103,15 @@ export {
 
 export const writeBoardApi = async(data) => {
   const response =  await instance.post('/board/posts', data);
-  return response.data
+  return response.data;
+}
+
+export const getBoardInfo = async(boardId) => {
+  const response = await instance.get(`board/${boardId}`);
+  return response.data;
+}
+
+export const updateBoard = async(boardId, data) => {
+  const response = await instance.put(`board/${boardId}/update`, data);
+  return response.data;
 }

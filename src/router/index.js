@@ -12,6 +12,8 @@ import BoardWriteView from "@/views/BoardWriteView.vue";
 import BoardUpdateView from "@/views/BoardUpdateView.vue";
 import NoticeDetail from "@/views/NoticeDetail.vue";
 import NoticeList from "@/views/NoticeList.vue";
+import NoticeWrite from "@/views/NoticeWrite.vue";
+import NoticeUpdate from "@/views/NoticeUpdate.vue";
 
 
 const router = createRouter({
@@ -82,6 +84,16 @@ const router = createRouter({
       path: '/notice',
       name: 'noticeList',
       component: NoticeList
+    },
+    {
+      path: '/notice/write',
+      name: 'noticeWrite',
+      component: NoticeWrite
+    },
+    {
+      path: '/notice/update/:noticeId',
+      name: 'noticeUpdate',
+      component: NoticeUpdate
     }
   ],
 });

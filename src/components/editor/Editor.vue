@@ -1,6 +1,6 @@
 <script setup>
 import { imgRegex } from '@/constants/firebaseRegex';
-import { QUILL_MODULES } from '@/constants/quillModules.';
+import { QUILL_MODULES } from '@/constants/quillModules';
 import { reactive, watch } from 'vue';
 import { quillEditor } from 'vue3-quill';
 

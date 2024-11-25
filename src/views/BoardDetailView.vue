@@ -222,7 +222,7 @@ const wComment = () => {
   }
   // alert(qwe.boardId);
   // alert(qwe.userId);
-  alert(qwe.content);
+  
   writeComment(
     boardId,
     // {
@@ -501,7 +501,7 @@ input {
   width: 100%;
   font-size: 50px;
   padding-bottom: 10px;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #ccc;
 }
 .commentWrite {
   width: 100%;

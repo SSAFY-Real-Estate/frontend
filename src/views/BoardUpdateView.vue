@@ -1,14 +1,19 @@
 <script setup>
-import { getDetail } from "@/apis/board/board";
-import { onMounted, reactive, ref, watch } from "vue";
+import { getBoardInfo, getDetail, updateBoard } from "@/apis/board/board";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { QUILL_MODULES } from '@/constants/quillModules.';
+import { QUILL_MODULES } from '@/constants/quillModules';
 import { quillEditor } from 'vue3-quill';
+import { usePrincipalStore } from "@/stores/principal";
 
 const route = useRoute();
 const router = useRouter();
 
 const { boardId } = route.params;
+
+const principalStore = usePrincipalStore();
+const user = computed(() => principalStore.user);
+const userInfo = ref({});
 
 const boardInfo = ref({});
 
@@ -17,7 +22,7 @@ const boardContent = ref('');
 
 const state = reactive({
     content: '',
-    _content: 'boardContent.value',
+    _content: '',
     editorOption: {
         placeholder: '',
         modules: QUILL_MODULES,
@@ -26,33 +31,71 @@ const state = reactive({
 })
 
 const detail = async() => {
-  getDetail(
-    boardId,
-    ({ data }) => {
-      boardInfo.value = data;
-      boardTitle.value = data.title;
-      boardContent.value = data.content;
-      state._content = data.content;
-    //   state.content = data.content;
-    },
-    (error) => {
-      console.log(error);
+  try {
+    const response = await getBoardInfo(boardId);
+    boardInfo.value = response;
+  } catch (error) {
+    console.error('Error fetching notice details:', error);
+  }
+}
+
+// const detail = async() => {
+//   getDetail(
+//     boardId,
+//     ({ data }) => {
+//       boardInfo.value = data;
+//       boardTitle.value = data.title;
+//       boardContent.value = data.content;
+//       state._content = data.content;
+//     //   state.content = data.content;
+//     },
+//     (error) => {
+//       console.log(error);
+//     }
+//   );
+// };
+
+watch(boardInfo, () => {
+  if(boardInfo.value) {
+    boardTitle.value = boardInfo.value.title || '';
+    boardContent.value = boardInfo.value.content || '';
+    state.content = boardInfo.value.content || '';
+  }
+})
+
+
+onMounted(async() => {
+    await principalStore.fetchUser();
+    userInfo.value = user.value;
+    await detail();
+    const quillInstance = document.querySelector('.editorTool .ql-editor');
+    if (quillInstance) {
+        quillInstance.innerHTML = state.content || '';
     }
-  );
-};
-
-
-onMounted(() => {
-    detail();
 })
 
 const update = () => {
    if(window.confirm('해당 게시물을 변경하시겠습니까?')) {
-        router.push({'name' : 'board'});
+      try {
+        const response = updateBoard(boardId, {
+          userId: user.value.userId,
+          title: boardTitle.value,
+          content: state._content
+        })
+        alert('해당 게시물 내용을 변경하였습니다.');
+        router.push({
+          name: 'detail',
+          params: {
+            boardId: boardId,
+          },
+        })
+      } catch (error) {
+        
+      }
    }
 }
 
-const onEditorChange = ({ quill, html, text }) => {
+const onEditorChange = ({ html }) => {
       console.log('editor change!', html)
       state._content = html
 }

@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 // import NoticeTable from '@/components/board/NoticeTable.vue';
-import NoticeMainCard from '@/components/board/\bNoticeMainCard.vue';
+import NoticeMainCard from '@/components/board/NoticeMainCard.vue';
 const router = useRouter();
 </script>
 <template>
