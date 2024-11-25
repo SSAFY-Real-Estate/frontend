@@ -354,6 +354,7 @@ const signUpClick = async() => {
         signUpEmail.value = '';
         signUpNickname.value = '';
         signUpProfileImg.value = '';
+        alert('회원가입이 완료되었습니다. 로그인 해주세요.');
     }else {
         alert('유효하지 않은 회원가입 양식입니다. 다시 입력해주세요.');
         signUpId.value = '';

@@ -160,7 +160,8 @@ const buttonClick = () => {
     }
 
     .userProfileImg > img {
-        width: 100%;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
     }
     .defaultProfileImg {
