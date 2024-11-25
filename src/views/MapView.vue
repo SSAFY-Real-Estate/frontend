@@ -1,9 +1,12 @@
 <script setup>
-import { KakaoMap, KakaoMapMarker } from "vue3-kakao-maps";
+import {
+  KakaoMap,
+  KakaoMapMarker,
+  KakaoMapCustomOverlay,
+} from "vue3-kakao-maps";
 import { onMounted, ref, watch, onBeforeMount } from "vue";
-import { getLocation } from "@/apis/map/map";
-import { isKakaoMapApiLoaded } from 'vue3-kakao-maps/@utils';
-
+import { isKakaoMapApiLoaded } from "vue3-kakao-maps/@utils";
+import { getLocation, getDoLocation } from "@/apis/map/map";
 const corInfo = ref([]); // 좌표 data
 const map = ref();
 const location = ref({
@@ -15,6 +18,7 @@ const location = ref({
 });
 
 // axios
+// 모든 아파트
 const gLoction = () => {
   getLocation(
     location.value,
@@ -29,6 +33,19 @@ const gLoction = () => {
   );
 };
 
+// 도 좌표
+const gDoLocation = () => {
+  getDoLocation(
+    location.value,
+    ({ data }) => {
+      corInfo.value = data;
+      console("잘들어왔습니다.");
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
 const onLoadKakaoMap = (mapRef) => {
   map.value = mapRef;
   console.log("map");
@@ -36,6 +53,7 @@ const onLoadKakaoMap = (mapRef) => {
 
 const getInfo = () => {
   if (map.value) {
+    console.log("지도정보를 가져옵니다.");
     const bounds = map.value.getBounds();
     const swLatLng = bounds.getSouthWest();
     const neLatLng = bounds.getNorthEast();
@@ -43,34 +61,137 @@ const getInfo = () => {
     location.value.swLng = swLatLng.getLng();
     location.value.neLat = neLatLng.getLat();
     location.value.neLng = neLatLng.getLng();
-    gLoction();
   }
-}
+};
 
 watch(map, () => {
+  let level = map.value.getLevel();
   if (map.value && isKakaoMapApiLoaded.value) {
     kakao.maps.event.addListener(map.value, "dragend", () => {
-      getInfo();
+      if (level <= 10 && level >= 5) {
+        getInfo();
+        gDoLocation();
+      } else {
+        getInfo();
+        gLoction();
+      }
     });
 
     kakao.maps.event.addListener(map.value, "zoom_changed", () => {
-      const level = map.value.getLevel(); // 변경된 줌 레벨 가져오기
+      level = map.value.getLevel(); // 변경된 줌 레벨 가져오기
+      if (level <= 10 && level >= 5) {
+        getInfo();
+        gDoLocation();
+      } else {
+        getInfo();
+        gLoction();
+      }
       console.log(`지도 줌 레벨이 변경되었습니다: ${level}`);
     });
   }
 });
 
+const handleClick = (info) => {
+  console.log("Clicked on:", info);
+  alert(`Clicked on ${info.name || "an apartment"}`);
+};
 
+const whatIsClass = (info) => {
+  if (info.className === "do") return true;
+  return false;
+};
+
+const whatIsClass2 = (info) => {
+  if (info.className === "apt") return true;
+  return false;
+};
+
+const whatIsClass3 = (info) => {
+  if (info.className === "sido") return true;
+  return false;
+};
+
+const eventDo = () => {
+  if (map.value) {
+    const level = map.value.getLevel();
+    map.value.setLevel(4);
+  }
+};
 </script>
-
 <template>
-  <button @click="getInfo">누르세요</button>
   <KakaoMap
-    :lat="33.450701"
-    :lng="126.57066"
-    :markerList="corInfo"
+    width="1050px"
+    height="550px"
+    :lat="37.5642135"
+    :lng="127.0016985"
+    :level="10"
     @onLoadKakaoMap="onLoadKakaoMap"
-  />
-  <div>{{corInfo}}</div>
+  >
+    <KakaoMapCustomOverlay
+      v-for="(info, index) in corInfo"
+      :key="index"
+      :lat="info.lat"
+      :lng="info.lng"
+    >
+      <template #default>
+        <div class="do" v-if="whatIsClass(info)" @click="eventDo">
+          {{ info.name }}
+        </div>
+        <div
+          class="apt_main"
+          v-if="whatIsClass2(info)"
+          @click="handleClick(info)"
+        >
+          <div class="apt_py">{{ info.pyung }}평</div>
+          <div class="apt_price">{{ info.dealAmount }}억</div>
+        </div>
+        <div v-if="whatIsClass3"></div>
+      </template>
+    </KakaoMapCustomOverlay>
+  </KakaoMap>
+  <div>{{ corInfo }}</div>
 </template>
-<style scoped></style>
+<style>
+.do {
+  width: 110px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #3ebeee;
+  color: white;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.apt_main {
+  box-sizing: border-box;
+  border: 2px solid #3ebeee;
+  border-radius: 5px;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.apt_py {
+  box-sizing: border-box;
+  font-size: 11px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #3ebeee;
+  border-bottom: #3ebeee;
+  height: 50%;
+}
+
+.apt_price {
+  height: 50%;
+  box-sizing: border-box;
+  font-size: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
