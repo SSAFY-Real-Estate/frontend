@@ -55,8 +55,8 @@ const buttonClick = () => {
             <img src="../../assets/headerLogo.png" alt="headerLogo">
         </div>
         <div class="nav">
-            <div class="navMap">지도</div>
-            <div class="navAdoptation">분양</div>
+            <div class="navMap" @click="router.push({name : 'map'})">지도</div>
+            <!-- <div class="navAdoptation">분양</div> -->
             <div class="navKeep" @click="router.push({name : 'zzim'})">찜</div>
             <div class="navPutHouse" @click="router.push({name : 'board'})">방내놓기</div>
             <div class="userInfo" @click="buttonClick">

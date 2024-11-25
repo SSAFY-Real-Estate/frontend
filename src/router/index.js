@@ -14,6 +14,7 @@ import NoticeDetail from "@/views/NoticeDetail.vue";
 import NoticeList from "@/views/NoticeList.vue";
 import NoticeWrite from "@/views/NoticeWrite.vue";
 import NoticeUpdate from "@/views/NoticeUpdate.vue";
+import MapView from "@/views/MapView.vue";
 
 
 const router = createRouter({
@@ -94,6 +95,11 @@ const router = createRouter({
       path: '/notice/update/:noticeId',
       name: 'noticeUpdate',
       component: NoticeUpdate
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: MapView,
     }
   ],
 });

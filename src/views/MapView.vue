@@ -120,7 +120,7 @@ const eventDo = () => {
 </script>
 <template>
   <KakaoMap
-    width="1050px"
+    width="1400px"
     height="550px"
     :lat="37.5642135"
     :lng="127.0016985"
