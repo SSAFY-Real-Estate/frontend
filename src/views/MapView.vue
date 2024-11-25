@@ -91,14 +91,31 @@ watch(map, () => {
   }
 });
 
-// 동적 html
-const dynamicHtml = (info) => {
-  if (info.className === "do") return `${info.name || "Marker"}`;
-  else
-    return `  <div class="apt_main">
-    <div class="apt_py">${info.excluUseAr}평</div>
-    <div class="apt_price">${info.dealAmount}억</div>
-  </div>`;
+const handleClick = (info) => {
+  console.log("Clicked on:", info);
+  alert(`Clicked on ${info.name || "an apartment"}`);
+};
+
+const whatIsClass = (info) => {
+  if (info.className === "do") return true;
+  return false;
+};
+
+const whatIsClass2 = (info) => {
+  if (info.className === "apt") return true;
+  return false;
+};
+
+const whatIsClass3 = (info) => {
+  if (info.className === "sido") return true;
+  return false;
+};
+
+const eventDo = () => {
+  if (map.value) {
+    const level = map.value.getLevel();
+    map.value.setLevel(4);
+  }
 };
 </script>
 <template>
@@ -115,8 +132,22 @@ const dynamicHtml = (info) => {
       :key="index"
       :lat="info.lat"
       :lng="info.lng"
-      :content="`<div class='${info.className}'>${dynamicHtml(info)}</div>`"
-    />
+    >
+      <template #default>
+        <div class="do" v-if="whatIsClass(info)" @click="eventDo">
+          {{ info.name }}
+        </div>
+        <div
+          class="apt_main"
+          v-if="whatIsClass2(info)"
+          @click="handleClick(info)"
+        >
+          <div class="apt_py">{{ info.pyung }}평</div>
+          <div class="apt_price">{{ info.dealAmount }}억</div>
+        </div>
+        <div v-if="whatIsClass3"></div>
+      </template>
+    </KakaoMapCustomOverlay>
   </KakaoMap>
   <div>{{ corInfo }}</div>
 </template>
@@ -130,6 +161,7 @@ const dynamicHtml = (info) => {
   background-color: #3ebeee;
   color: white;
   border-radius: 9px;
+  cursor: pointer;
 }
 
 .apt_main {
@@ -139,6 +171,7 @@ const dynamicHtml = (info) => {
   width: 50px;
   height: 50px;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .apt_py {
