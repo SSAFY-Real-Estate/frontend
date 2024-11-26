@@ -16,6 +16,7 @@ import { useRouter } from "vue-router";
 import { usePrincipalStore } from "@/stores/principal";
 import { deleteZzimApi, getZzims, postZzim } from "@/apis/zzim/zzim";
 import { getHomes } from "@/apis/ai/ai";
+import "animate.css";
 const corInfo = ref([]); // 좌표 data
 const map = ref();
 const pre = ref();
@@ -26,7 +27,6 @@ const location = ref({
   neLat: 37.66096638568398,
   neLng: 133.95703806681934,
 });
-
 // axios
 // 시군구 좌표
 const gSigunguLocation = () => {
@@ -222,31 +222,27 @@ const eventBuildingInfo = (info) => {
   }
 };
 
-
-
 const router = useRouter();
 
 // 도경록
 const principalStore = usePrincipalStore();
 const user = computed(() => principalStore.user);
-const zzimInfos = ref(null);
+const zzimInfos = ref([]);
 
-const getZzimData = async() => {
+const getZzimData = async () => {
   try {
     const response = await getZzims(user.value.userId);
-    console.log(response)
+    console.log(response);
     zzimInfos.value = response;
-  } catch (error) {
-    
-  }
-}
+  } catch (error) {}
+};
 
 const zzimTargetInfo = ref(null);
 
-const postZzimClick = async(item) => {
-  if(!user.value.userId) {
-    alert('로그인 후 사용가능한 서비스입니다. 로그인해주세요');
-    console.log(user)
+const postZzimClick = async (item) => {
+  if (!user.value.userId) {
+    alert("로그인 후 사용가능한 서비스입니다. 로그인해주세요");
+    console.log(user);
     return;
   }
   try {
@@ -260,51 +256,45 @@ const postZzimClick = async(item) => {
       sidoName: item.sidoName,
       gugunName: item.gugunName,
       dongName: item.dongName,
-      aptName : item.aptName,
-      pyung : item.pyung
-    })
-    console.log(response)
+      aptName: item.aptName,
+      pyung: item.pyung,
+    });
+    console.log(response);
     getZzimData();
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
-const deleteZzim = async(item) => {
+const deleteZzim = async (item) => {
   try {
     const response = await deleteZzimApi(item.lat, item.lng, user.value.userId);
-    alert('삭제완료');
+    alert("삭제완료");
     getZzimData();
-  } catch (error) {
-    
-  }
-}
+  } catch (error) {}
+};
 
 const aiButton = ref(false);
 const aiAnswer = ref({});
 
-const aiRecommend = async() => {
+const aiRecommend = async () => {
   try {
     const response = await getHomes(corInfo.value);
     aiAnswer.value = response.apart;
     aiButton.value = true;
-  } catch (error) {
-    
-  }
-}
-
-
+  } catch (error) {}
+};
 
 watch(aiAnswer, () => {
-  console.log(aiAnswer.value)
-})
+  console.log(aiAnswer.value);
+});
 
-onMounted(async() => {
+onMounted(async () => {
   getInfo();
   gDoLocation();
   principalStore.fetchUser();
-  console.log(user.value)
-  await getZzimData(user.value.userId)
+  console.log(user.value);
+  await getZzimData(user.value.userId);
 });
 
 // 도경록
@@ -336,7 +326,6 @@ onMounted(async() => {
           <img src="../assets/adoptationLogo.png" alt="adoptationLogo" />
           분양
         </div>
-        
       </div>
       <div class="mapInfoDetailWrap">
         <div v-if="focusInfo && focusInfo.aptName" class="focusCurrentInfo">
@@ -351,7 +340,25 @@ onMounted(async() => {
           <h2 class="price">
             {{ focusInfo.dealAmount }}억 ({{ focusInfo.pyung }}평)
           </h2>
-          <div :class="zzimInfos.some(data => data.lat == focusInfo.lat && data.lng == focusInfo.lng) ? 'correct': ''" @click="zzimInfos.some(data => data.lat == focusInfo.lat && data.lng == focusInfo.lng) ? deleteZzim(focusInfo) : postZzimClick(focusInfo)" class="heart"><i class="fa-solid fa-heart"></i></div>
+          <div
+            :class="
+              zzimInfos.some(
+                (data) => data.lat == focusInfo.lat && data.lng == focusInfo.lng
+              )
+                ? 'correct'
+                : ''
+            "
+            @click="
+              zzimInfos.some(
+                (data) => data.lat == focusInfo.lat && data.lng == focusInfo.lng
+              )
+                ? deleteZzim(focusInfo)
+                : postZzimClick(focusInfo)
+            "
+            class="heart"
+          >
+            <i class="fa-solid fa-heart"></i>
+          </div>
         </div>
         <div
           v-if="LevelGuard()"
@@ -368,7 +375,19 @@ onMounted(async() => {
             분류 : {{ item.className == "apt" ? "아파트" : "" }}
           </div>
           <h2 class="price">{{ item.dealAmount }}억 ({{ item.pyung }}평)</h2>
-          <div :class="zzimInfos.some(data => data.lat == item.lat && data.lng == item.lng) ? 'correct': ''" class="heart" @click="postZzimClick(item)"><i class="fa-solid fa-heart"></i></div>
+          <div
+            :class="
+              zzimInfos.some(
+                (data) => data.lat == item.lat && data.lng == item.lng
+              )
+                ? 'correct'
+                : ''
+            "
+            class="heart"
+            @click="postZzimClick(item)"
+          >
+            <i class="fa-solid fa-heart"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -391,12 +410,12 @@ onMounted(async() => {
             {{ info.name }}
           </div>
           <div
-            class="apt_main"
+            :class="info.isCheck ? 'apt_main_click' : 'apt_main'"
             v-if="whatIsClass2(info)"
             @click="handleClick(info)"
           >
             <div
-              :class="info.isCheck ? 'apt_py_click' : 'apt_py'"
+              :class="info.isCheck ? 'apt_py_click ' : 'apt_py'"
               @click="eventApt(info)"
             >
               {{ info.pyung }}평
@@ -427,12 +446,21 @@ onMounted(async() => {
     <div v-if="aiAnswer && aiButton" class="showAiAnswerModal">
       <div class="aiInfoDetail">
         <h1 class="aiAptName">{{ aiAnswer?.aptName }}</h1>
-        <div class="aiAddress">{{ aiAnswer?.sidoName }} {{ aiAnswer?.gugunName }} {{ aiAnswer?.dongName }}</div>
-        <div class="aiCategory">분류 : {{ aiAnswer?.className == "apt" ? "아파트" : "" }}</div>
-        <h2 class="aiPrice">{{ aiAnswer?.dealAmount }}억 ({{ aiAnswer?.pyung }}평)</h2>
+        <div class="aiAddress">
+          {{ aiAnswer?.sidoName }} {{ aiAnswer?.gugunName }}
+          {{ aiAnswer?.dongName }}
+        </div>
+        <div class="aiCategory">
+          분류 : {{ aiAnswer?.className == "apt" ? "아파트" : "" }}
+        </div>
+        <h2 class="aiPrice">
+          {{ aiAnswer?.dealAmount }}억 ({{ aiAnswer?.pyung }}평)
+        </h2>
         <h3 class="aiReason">{{ aiAnswer?.reason }}</h3>
       </div>
-      <button @click="aiAnswer = null" class="aiButtonAnswer"><i class="fa-solid fa-x"></i></button>
+      <button @click="aiAnswer = null" class="aiButtonAnswer">
+        <i class="fa-solid fa-x"></i>
+      </button>
     </div>
   </div>
   <div>{{ corInfo }}</div>
@@ -560,7 +588,7 @@ onMounted(async() => {
 }
 
 .correct {
-  color:#3EBEEE
+  color: #3ebeee;
 }
 
 /* 오버레이 css  */
@@ -584,6 +612,18 @@ onMounted(async() => {
   height: 50px;
   overflow: hidden;
   cursor: pointer;
+}
+
+.apt_main_click {
+  box-sizing: border-box;
+  border: 2px solid #3ebeee;
+  border-radius: 5px;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  cursor: pointer;
+  animation: swing; /* referring directly to the animation's @keyframe declaration */
+  animation-duration: 0.8s; /* don't forget to set a duration! */
 }
 
 .apt_py {
@@ -647,36 +687,34 @@ onMounted(async() => {
   align-items: center;
 }
 
-
 .aiButton {
   width: 100px;
   height: 100px;
   cursor: pointer;
-  color:#3EBEEE;
+  color: #3ebeee;
   font-size: 50px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border: 1px solid #ddd;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px 20px;
   box-sizing: border-box;
-  border-radius: 50%
+  border-radius: 50%;
 }
 .aiButton:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
-
 
 .showAiAnswerModal {
   position: absolute;
   padding: 20px;
   box-sizing: border-box;
   display: flex;
-  
+
   align-items: center;
-  
+
   width: 600px;
   height: 300px;
   background-color: #eee;
@@ -698,12 +736,12 @@ onMounted(async() => {
 }
 
 .aiButtonAnswer {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border: 1px solid #ddd;
   width: 50px;
   height: 50px;
-  background-color: #3EBEEE;
+  background-color: #3ebeee;
   font-size: 25px;
   color: white;
   border-radius: 50%;
@@ -717,7 +755,6 @@ onMounted(async() => {
 }
 
 .aiButtonAnswer:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
-
 </style>
