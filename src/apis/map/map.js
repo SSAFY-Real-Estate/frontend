@@ -29,4 +29,8 @@ function getSigungu(param, success, fail) {
 function getDong(param, success, fail) {
   instance.post(`/map/dong`, JSON.stringify(param)).then(success).catch(fail);
 }
-export { getLocation, getDoLocation, getSigungu, getDong };
+
+function getSearch(param, success, fail) {
+  instance.get(`/map/${param}`).then(success).catch(fail);
+}
+export { getLocation, getDoLocation, getSigungu, getDong, getSearch };

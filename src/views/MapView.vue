@@ -11,15 +11,19 @@ import {
   getDoLocation,
   getSigungu,
   getDong,
+  getSearch,
 } from "@/apis/map/map";
 import { useRouter } from "vue-router";
 import { usePrincipalStore } from "@/stores/principal";
 import { deleteZzimApi, getZzims, postZzim } from "@/apis/zzim/zzim";
 import { getHomes } from "@/apis/ai/ai";
 import "animate.css";
+import SearchBar from "@/components/search/SearchBar.vue";
 const corInfo = ref([]); // 좌표 data
 const map = ref();
 const pre = ref();
+const word = ref("");
+const searchInfo = ref([]);
 const location = ref({
   // getLocation parameter
   swLat: 28.814718216888917,
@@ -27,7 +31,21 @@ const location = ref({
   neLat: 37.66096638568398,
   neLng: 133.95703806681934,
 });
+const isDataOn = ref(false);
 // axios
+//검색
+const gSearch = () => {
+  getSearch(
+    word.value,
+    ({ data }) => {
+      searchInfo.value = data;
+      console.log(data);
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
 // 시군구 좌표
 const gSigunguLocation = () => {
   getSigungu(
@@ -100,6 +118,7 @@ const getInfo = () => {
     location.value.swLng = swLatLng.getLng();
     location.value.neLat = neLatLng.getLat();
     location.value.neLng = neLatLng.getLng();
+    isDataOn.value = true;
   }
 };
 
@@ -145,7 +164,6 @@ watch(map, () => {
     });
   }
 });
-
 const focusInfo = ref({});
 
 const handleClick = (info) => {
@@ -180,6 +198,7 @@ const whatIsClass3 = (info) => {
 const whatIsClass4 = (info) => {
   if (info.className === "dong") return true;
 };
+
 const eventDo = () => {
   if (map.value) {
     const level = map.value.getLevel();
@@ -211,7 +230,6 @@ const LevelGuard = () => {
   }
 };
 const eventBuildingInfo = (info) => {
-  console.log("click");
   if (map.value) {
     map.value.panTo(new kakao.maps.LatLng(info.lat, info.lng));
     info.isCheck = true;
@@ -307,7 +325,24 @@ watch(aiAnswer, () => {
     }
   }
 });
+const eventSearch = (event) => {
+  if (event.key == "Enter") {
+    if (searchInfo.value != null) searchInfo.value = null;
+    gSearch();
+  }
+};
 
+const eventSearchInfo = (info) => {
+  if (map.value) {
+    map.value.setLevel(2);
+    map.value.panTo(new kakao.maps.LatLng(info.lat, info.lng));
+    info.isCheck = true;
+    if (pre.value) {
+      pre.value.isCheck = false;
+    }
+    pre.value = info;
+  }
+};
 onMounted(async () => {
   getInfo();
   gDoLocation();
@@ -315,13 +350,16 @@ onMounted(async () => {
   console.log(user.value);
   await getZzimData(user.value.userId);
 });
-
+const searchButton = ref(false);
 // 도경록
 </script>
 <template>
   <div id="mapWrap">
     <div class="mapInfo">
       <div class="buttonWrap">
+        <div class="search_map" @click="searchButton = !searchButton">
+          <i class="fa-solid fa-magnifying-glass search_child_img"></i>
+        </div>
         <div class="aiButton" @click="aiRecommend">
           <i class="fa-solid fa-robot"></i>
         </div>
@@ -346,7 +384,48 @@ onMounted(async () => {
           분양
         </div>
       </div>
-      <div class="mapInfoDetailWrap">
+      <div class="searchInfoDetailWrap" v-if="searchButton">
+        <div class="searchBar">
+          <div class="searchBar_img">
+            <i class="fa-solid fa-magnifying-glass search_child_img"></i>
+            <!-- <img src="../../assets/apartLogo.png" width="30px" height="30px" /> -->
+          </div>
+          <div class="searchBar_input">
+            <input type="text" @keyup="eventSearch" v-model="word" />
+          </div>
+        </div>
+        <!-- search list -->
+        <div
+          v-for="item in searchInfo"
+          :key="index"
+          class="buildingInfo"
+          @click="eventSearchInfo(item)"
+        >
+          <h1 class="aptName">{{ item.aptName }}</h1>
+          <div class="address">
+            {{ item.sidoName }} {{ item.gugunName }} {{ item.dongName }}
+          </div>
+          <div class="category">
+            분류 : {{ item.className == "apt" ? "아파트" : "" }}
+          </div>
+          <h2 class="price">{{ item.dealAmount }}억 ({{ item.pyung }}평)</h2>
+          <div
+            :class="
+              zzimInfos.some(
+                (data) => data.lat == item.lat && data.lng == item.lng
+              )
+                ? 'correct'
+                : ''
+            "
+            class="heart"
+            @click="postZzimClick(item)"
+          >
+            <i class="fa-solid fa-heart"></i>
+          </div>
+        </div>
+        <!-- search list -->
+      </div>
+      <div class="mapInfoDetailWrap" v-if="!searchButton">
         <div v-if="focusInfo && focusInfo.aptName" class="focusCurrentInfo">
           <h1 class="aptName">{{ focusInfo.aptName }}</h1>
           <div class="address">
@@ -419,7 +498,30 @@ onMounted(async () => {
       @onLoadKakaoMap="onLoadKakaoMap"
     >
       <KakaoMapCustomOverlay
+        v-for="(info, index) in searchInfo"
+        v-if="searchButton"
+        :key="index"
+        :lat="info.lat"
+        :lng="info.lng"
+      >
+        <template #default>
+          <div
+            :class="info.isCheck ? 'apt_main_click' : 'apt_main'"
+            @click="handleClick(info)"
+          >
+            <div
+              :class="info.isCheck ? 'apt_py_click ' : 'apt_py'"
+              @click="eventApt(info)"
+            >
+              {{ info.pyung }}평
+            </div>
+            <div class="apt_price">{{ info.dealAmount }}억</div>
+          </div>
+        </template>
+      </KakaoMapCustomOverlay>
+      <KakaoMapCustomOverlay
         v-for="(info, index) in corInfo"
+        v-if="!searchButton"
         :key="index"
         :lat="info.lat"
         :lng="info.lng"
@@ -482,7 +584,6 @@ onMounted(async () => {
       </button>
     </div>
   </div>
-  <div>{{ corInfo }}</div>
 </template>
 <style scoped>
 #mapWrap {
@@ -492,6 +593,35 @@ onMounted(async () => {
   justify-content: center;
 }
 
+input {
+  border: none; /* 기본 테두리 제거 */
+  outline: none; /* 포커스 시 기본 outline 제거 */
+  font-size: 20px;
+  width: 200px;
+}
+.searchBar {
+  display: flex;
+  align-items: center;
+  width: 320px;
+  height: 25px;
+  box-sizing: border-box;
+  padding-right: 50px;
+  border: 1px solid #ccc;
+  border-radius: 9px;
+  padding: 20px;
+}
+.searchBar_img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.searchBar_input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+}
 .mapInfo {
   width: 450px;
   display: flex;
@@ -529,7 +659,18 @@ onMounted(async () => {
   width: 50px;
   height: 50px;
 }
-
+.searchInfoDetailWrap {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  width: 340px;
+  height: 800px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+  gap: 5px;
+}
 .mapInfoDetailWrap {
   box-sizing: border-box;
   display: flex;
@@ -705,7 +846,22 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
 }
-
+.search_map {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  color: #3ebeee;
+  font-size: 50px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 20px;
+  box-sizing: border-box;
+  border-radius: 50%;
+}
 .aiButton {
   width: 100px;
   height: 100px;
