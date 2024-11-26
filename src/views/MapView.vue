@@ -284,9 +284,28 @@ const aiRecommend = async () => {
     aiButton.value = true;
   } catch (error) {}
 };
-
 watch(aiAnswer, () => {
-  console.log(aiAnswer.value);
+  if (aiAnswer.value != null) {
+    focusInfo.value = aiAnswer.value;
+    console.log(focusInfo.value);
+    if (map.value) {
+      map.value.panTo(
+        new kakao.maps.LatLng(aiAnswer.value.lat, aiAnswer.value.lng)
+      );
+      for (let info of corInfo.value) {
+        if (
+          info.lat === aiAnswer.value.lat &&
+          info.lng === aiAnswer.value.lng
+        ) {
+          info.isCheck = true;
+          if (pre.value) {
+            pre.value.isCheck = false;
+          }
+          pre.value = info;
+        }
+      }
+    }
+  }
 });
 
 onMounted(async () => {
