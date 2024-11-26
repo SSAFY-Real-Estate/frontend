@@ -27,9 +27,9 @@ onMounted(() => {
 <!-- 1920 X 1080 해상도 기준 -->
 <template>
   <div id="wrap">
-    <Header v-if="route.currentRoute.value.path !== '/'" />
+    <!-- <Header v-if="route.currentRoute.value.path !== '/'" /> -->
     <RouterView />
-    <!-- <MapView /> -->
+    <!-- <drwaing /> -->
   </div>
 </template>
 

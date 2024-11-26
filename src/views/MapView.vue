@@ -6,7 +6,12 @@ import {
 } from "vue3-kakao-maps";
 import { onMounted, ref, watch, onBeforeMount } from "vue";
 import { isKakaoMapApiLoaded } from "vue3-kakao-maps/@utils";
-import { getLocation, getDoLocation } from "@/apis/map/map";
+import {
+  getLocation,
+  getDoLocation,
+  getSigungu,
+  getDong,
+} from "@/apis/map/map";
 import { useRouter } from "vue-router";
 const corInfo = ref([]); // 좌표 data
 const map = ref();
@@ -19,6 +24,19 @@ const location = ref({
 });
 
 // axios
+// 시군구 좌표
+const gSigunguLocation = () => {
+  getSigungu(
+    location.value,
+    ({ data }) => {
+      corInfo.value = data;
+      console.log(corInfo.value);
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
 // 모든 아파트
 const gLoction = () => {
   getLocation(
@@ -40,7 +58,18 @@ const gDoLocation = () => {
     location.value,
     ({ data }) => {
       corInfo.value = data;
-      console("잘들어왔습니다.");
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+
+const gDong = () => {
+  getDong(
+    location.value,
+    ({ data }) => {
+      corInfo.value = data;
     },
     (error) => {
       console.log(error);
@@ -69,9 +98,17 @@ watch(map, () => {
   let level = map.value.getLevel();
   if (map.value && isKakaoMapApiLoaded.value) {
     kakao.maps.event.addListener(map.value, "dragend", () => {
-      if (level <= 10 && level >= 5) {
+      if (level <= 9 && level >= 8) {
         getInfo();
         gDoLocation();
+      } else if (level >= 6 && level <= 7) {
+        getInfo();
+        gSigunguLocation();
+        console.log("sigungu_level");
+      } else if (level >= 3 && level <= 5) {
+        getInfo();
+        gDong();
+        console.log("dong_level");
       } else {
         getInfo();
         gLoction();
@@ -80,9 +117,17 @@ watch(map, () => {
 
     kakao.maps.event.addListener(map.value, "zoom_changed", () => {
       level = map.value.getLevel(); // 변경된 줌 레벨 가져오기
-      if (level <= 10 && level >= 5) {
+      if (level <= 9 && level >= 8) {
         getInfo();
         gDoLocation();
+      } else if (level >= 6 && level <= 7) {
+        getInfo();
+        gSigunguLocation();
+        console.log("sigungu_level");
+      } else if (level >= 3 && level <= 5) {
+        getInfo();
+        gDong();
+        console.log("dong_level");
       } else {
         getInfo();
         gLoction();
@@ -102,7 +147,7 @@ const handleClick = (info) => {
 
 watch(() => {
   console.log(focusInfo.value);
-})
+});
 
 const whatIsClass = (info) => {
   if (info.className === "do") return true;
@@ -115,60 +160,98 @@ const whatIsClass2 = (info) => {
 };
 
 const whatIsClass3 = (info) => {
-  if (info.className === "sido") return true;
+  if (info.className === "sigungu") return true;
   return false;
 };
 
+const whatIsClass4 = (info) => {
+  if (info.className === "dong") return true;
+};
 const eventDo = () => {
   if (map.value) {
     const level = map.value.getLevel();
-    map.value.setLevel(4);
+    map.value.setLevel(7);
+    map.value.setCenter(new kakao.maps.LatLng(37.5642135, 127.0016985));
   }
 };
 
-// 
+const eventDong = () => {
+  if (map.value) {
+    const level = map.value.getLevel();
+    map.value.setLevel(2);
+    map.value.setCenter(new kakao.maps.LatLng(info.lat, info.lng));
+  }
+};
+const eventSigungu = (info) => {
+  if (map.value) {
+    const level = map.value.getLevel();
+    map.value.setLevel(5);
+    map.value.setCenter(new kakao.maps.LatLng(info.lat, info.lng));
+  }
+};
+
+onMounted(() => {
+  getInfo();
+  gDoLocation();
+});
+//
 
 const router = useRouter();
-
 </script>
 <template>
   <div id="mapWrap">
     <div class="mapInfo">
       <div class="buttonWrap">
-        <div class="mapLogoButton" @click="router.push({name : 'map'})">
-          <img src="../assets/OfficetelLogo.png" alt="">
+        <div class="mapLogoButton" @click="router.push({ name: 'map' })">
+          <img src="../assets/OfficetelLogo.png" alt="" />
           아파트
         </div>
-        <div class="mapLogoButton" @click="router.push({name : 'map'})">
-          <img src="../assets/roomLogo.png" alt="">
+        <div class="mapLogoButton" @click="router.push({ name: 'map' })">
+          <img src="../assets/roomLogo.png" alt="" />
           원/투 룸
         </div>
-        <div class="mapLogoButton" @click="router.push({name : 'map'})">
-          <img src="../assets/houseLogo.png" alt="">
+        <div class="mapLogoButton" @click="router.push({ name: 'map' })">
+          <img src="../assets/houseLogo.png" alt="" />
           주택
         </div>
-        <div class="mapLogoButton" @click="router.push({name : 'map'})">
-          <img src="../assets/apartLogo.png" alt="">
+        <div class="mapLogoButton" @click="router.push({ name: 'map' })">
+          <img src="../assets/apartLogo.png" alt="" />
           오피스텔
         </div>
-        <div class="mapLogoButton" @click="router.push({name : 'map'})">
-          <img src="../assets/adoptationLogo.png" alt="adoptationLogo">
+        <div class="mapLogoButton" @click="router.push({ name: 'map' })">
+          <img src="../assets/adoptationLogo.png" alt="adoptationLogo" />
           분양
         </div>
       </div>
       <div class="mapInfoDetailWrap">
         <div v-if="focusInfo && focusInfo.aptName" class="focusCurrentInfo">
           <h1 class="aptName">{{ focusInfo.aptName }}</h1>
-          <div class="address">{{ focusInfo.sidoName }} {{ focusInfo.gugunName }} {{ focusInfo.dongName }}</div>
-          <div class="category">분류 : {{ focusInfo.className == 'apt' ? '아파트' : '' }}</div>
-          <h2 class="price">{{ focusInfo.dealAmount }}억 ({{ focusInfo.pyung }}평)</h2>
+          <div class="address">
+            {{ focusInfo.sidoName }} {{ focusInfo.gugunName }}
+            {{ focusInfo.dongName }}
+          </div>
+          <div class="category">
+            분류 : {{ focusInfo.className == "apt" ? "아파트" : "" }}
+          </div>
+          <h2 class="price">
+            {{ focusInfo.dealAmount }}억 ({{ focusInfo.pyung }}평)
+          </h2>
           <div class="heart"><i class="fa-solid fa-heart"></i></div>
         </div>
 
-        <div v-if="focusInfo.aptName" v-for="item in corInfo" :key="index" class="buildingInfo">
+        <div
+          v-if="focusInfo.aptName"
+          v-for="item in corInfo"
+          :key="index"
+          class="buildingInfo"
+        >
           <h1 class="aptName">{{ item.aptName }}</h1>
-          <div class="address">{{ item.sidoName }} {{ item.gugunName }} {{ item.dongName }}</div>
-          <div class="category">분류 : {{ item.className == 'apt' ? '아파트' : '' }}</div>
+          <div class="address">
+            {{ item.sidoName }} {{ item.gugunName }} {{ item.dongName }}
+          </div>
+          <div class="category">
+            분류 : {{ item.className == "apt" ? "아파트" : "" }}
+          </div>
           <h2 class="price">{{ item.dealAmount }}억 ({{ item.pyung }}평)</h2>
           <div class="heart"><i class="fa-solid fa-heart"></i></div>
         </div>
@@ -179,7 +262,7 @@ const router = useRouter();
       height="800px"
       :lat="37.5642135"
       :lng="127.0016985"
-      :level="10"
+      :level="9"
       @onLoadKakaoMap="onLoadKakaoMap"
     >
       <KakaoMapCustomOverlay
@@ -200,7 +283,23 @@ const router = useRouter();
             <div class="apt_py">{{ info.pyung }}평</div>
             <div class="apt_price">{{ info.dealAmount }}억</div>
           </div>
-          <div v-if="whatIsClass3"></div>
+          <div
+            class="sigungu_main"
+            v-if="whatIsClass3(info)"
+            @click="eventSigungu(info)"
+          >
+            <div class="sigungu_name">{{ info.sigunguName }}</div>
+            <div class="sigungu_avg">{{ info.average }}억</div>
+          </div>
+
+          <div
+            class="sigungu_main"
+            v-if="whatIsClass4(info)"
+            @click="eventDong(info)"
+          >
+            <div class="sigungu_name">{{ info.dongName }}</div>
+            <div class="sigungu_avg">{{ info.average }}억</div>
+          </div>
         </template>
       </KakaoMapCustomOverlay>
     </KakaoMap>
@@ -211,16 +310,14 @@ const router = useRouter();
 #mapWrap {
   display: flex;
   width: 1920px;
-  justify-content: center
+  justify-content: center;
 }
 
 .mapInfo {
   width: 450px;
   display: flex;
-  gap: 10px
+  gap: 10px;
 }
-
-
 
 .buttonWrap {
   /* width: 10%; */
@@ -231,8 +328,8 @@ const router = useRouter();
 
 .mapLogoButton {
   gap: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
   width: 100px;
   display: flex;
@@ -246,7 +343,7 @@ const router = useRouter();
   cursor: pointer;
 }
 .mapLogoButton:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
 
 .mapLogoButton > img {
@@ -261,7 +358,7 @@ const router = useRouter();
   padding: 10px;
   width: 340px;
   height: 800px;
-  overflow: auto; 
+  overflow: auto;
   border: 1px solid #ddd;
   border-radius: 9px;
   gap: 5px;
@@ -277,8 +374,8 @@ const router = useRouter();
   width: 300px;
   height: 200px;
   gap: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
   border: 1px solid #ddd;
   border-radius: 9px;
@@ -286,7 +383,7 @@ const router = useRouter();
 }
 
 .buildingInfo:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
 
 .focusCurrentInfo {
@@ -300,8 +397,8 @@ const router = useRouter();
   width: 300px;
   height: 200px;
   gap: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
   /* border: 1px solid #ddd; */
   border-radius: 9px;
@@ -321,17 +418,16 @@ const router = useRouter();
   justify-content: center;
   align-items: center;
   font-size: 25px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: inset;
 }
 
 .heart:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
 
-
-/*  */
+/* 오버레이 css  */
 .do {
   width: 110px;
   height: 30px;
@@ -368,8 +464,37 @@ const router = useRouter();
 
 .apt_price {
   height: 50%;
+  background-color: white;
   box-sizing: border-box;
   font-size: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sigungu_main {
+  background-color: white;
+  padding: 5px;
+  box-sizing: border-box;
+  border: 2px solid #3ebeee;
+  border-radius: 5px;
+  height: 50px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.sigungu_name {
+  height: 50%;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sigungu_avg {
+  height: 50%;
+  font-size: 11px;
+  color: gray;
   display: flex;
   justify-content: center;
   align-items: center;
