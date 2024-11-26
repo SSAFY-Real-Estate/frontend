@@ -4,7 +4,7 @@ import {
   KakaoMapMarker,
   KakaoMapCustomOverlay,
 } from "vue3-kakao-maps";
-import { onMounted, ref, watch, onBeforeMount } from "vue";
+import { onMounted, ref, watch, onBeforeMount, computed } from "vue";
 import { isKakaoMapApiLoaded } from "vue3-kakao-maps/@utils";
 import {
   getLocation,
@@ -13,6 +13,9 @@ import {
   getDong,
 } from "@/apis/map/map";
 import { useRouter } from "vue-router";
+import { usePrincipalStore } from "@/stores/principal";
+import { deleteZzimApi, getZzims, postZzim } from "@/apis/zzim/zzim";
+import { getHomes } from "@/apis/ai/ai";
 const corInfo = ref([]); // 좌표 data
 const map = ref();
 const pre = ref();
@@ -218,18 +221,101 @@ const eventBuildingInfo = (info) => {
     pre.value = info;
   }
 };
-onMounted(() => {
-  getInfo();
-  gDoLocation();
-});
-//
+
+
 
 const router = useRouter();
+
+// 도경록
+const principalStore = usePrincipalStore();
+const user = computed(() => principalStore.user);
+const zzimInfos = ref(null);
+
+const getZzimData = async() => {
+  try {
+    const response = await getZzims(user.value.userId);
+    console.log(response)
+    zzimInfos.value = response;
+  } catch (error) {
+    
+  }
+}
+
+const zzimTargetInfo = ref(null);
+
+const postZzimClick = async(item) => {
+  if(!user.value.userId) {
+    alert('로그인 후 사용가능한 서비스입니다. 로그인해주세요');
+    console.log(user)
+    return;
+  }
+  try {
+    const response = await postZzim({
+      userId: user.value.userId,
+      lat: item.lat,
+      lng: item.lng,
+      className: item.className,
+      excluUseAr: item.excluUseAr,
+      dealAmount: item.dealAmount,
+      sidoName: item.sidoName,
+      gugunName: item.gugunName,
+      dongName: item.dongName,
+      aptName : item.aptName,
+      pyung : item.pyung
+    })
+    console.log(response)
+    getZzimData();
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const deleteZzim = async(item) => {
+  try {
+    const response = await deleteZzimApi(item.lat, item.lng, user.value.userId);
+    alert('삭제완료');
+    getZzimData();
+  } catch (error) {
+    
+  }
+}
+
+const aiButton = ref(false);
+const aiAnswer = ref({});
+
+const aiRecommend = async() => {
+  try {
+    const response = await getHomes(corInfo.value);
+    aiAnswer.value = response.apart;
+    aiButton.value = true;
+  } catch (error) {
+    
+  }
+}
+
+
+
+watch(aiAnswer, () => {
+  console.log(aiAnswer.value)
+})
+
+onMounted(async() => {
+  getInfo();
+  gDoLocation();
+  principalStore.fetchUser();
+  console.log(user.value)
+  await getZzimData(user.value.userId)
+});
+
+// 도경록
 </script>
 <template>
   <div id="mapWrap">
     <div class="mapInfo">
       <div class="buttonWrap">
+        <div class="aiButton" @click="aiRecommend">
+          <i class="fa-solid fa-robot"></i>
+        </div>
         <div class="mapLogoButton" @click="router.push({ name: 'map' })">
           <img src="../assets/OfficetelLogo.png" alt="" />
           아파트
@@ -250,6 +336,7 @@ const router = useRouter();
           <img src="../assets/adoptationLogo.png" alt="adoptationLogo" />
           분양
         </div>
+        
       </div>
       <div class="mapInfoDetailWrap">
         <div v-if="focusInfo && focusInfo.aptName" class="focusCurrentInfo">
@@ -264,7 +351,7 @@ const router = useRouter();
           <h2 class="price">
             {{ focusInfo.dealAmount }}억 ({{ focusInfo.pyung }}평)
           </h2>
-          <div class="heart"><i class="fa-solid fa-heart"></i></div>
+          <div :class="zzimInfos.some(data => data.lat == focusInfo.lat && data.lng == focusInfo.lng) ? 'correct': ''" @click="zzimInfos.some(data => data.lat == focusInfo.lat && data.lng == focusInfo.lng) ? deleteZzim(focusInfo) : postZzimClick(focusInfo)" class="heart"><i class="fa-solid fa-heart"></i></div>
         </div>
         <div
           v-if="LevelGuard()"
@@ -281,7 +368,7 @@ const router = useRouter();
             분류 : {{ item.className == "apt" ? "아파트" : "" }}
           </div>
           <h2 class="price">{{ item.dealAmount }}억 ({{ item.pyung }}평)</h2>
-          <div class="heart"><i class="fa-solid fa-heart"></i></div>
+          <div :class="zzimInfos.some(data => data.lat == item.lat && data.lng == item.lng) ? 'correct': ''" class="heart" @click="postZzimClick(item)"><i class="fa-solid fa-heart"></i></div>
         </div>
       </div>
     </div>
@@ -336,11 +423,23 @@ const router = useRouter();
         </template>
       </KakaoMapCustomOverlay>
     </KakaoMap>
+
+    <div v-if="aiAnswer && aiButton" class="showAiAnswerModal">
+      <div class="aiInfoDetail">
+        <h1 class="aiAptName">{{ aiAnswer?.aptName }}</h1>
+        <div class="aiAddress">{{ aiAnswer?.sidoName }} {{ aiAnswer?.gugunName }} {{ aiAnswer?.dongName }}</div>
+        <div class="aiCategory">분류 : {{ aiAnswer?.className == "apt" ? "아파트" : "" }}</div>
+        <h2 class="aiPrice">{{ aiAnswer?.dealAmount }}억 ({{ aiAnswer?.pyung }}평)</h2>
+        <h3 class="aiReason">{{ aiAnswer?.reason }}</h3>
+      </div>
+      <button @click="aiAnswer = null" class="aiButtonAnswer"><i class="fa-solid fa-x"></i></button>
+    </div>
   </div>
   <div>{{ corInfo }}</div>
 </template>
 <style>
 #mapWrap {
+  position: relative;
   display: flex;
   width: 1920px;
   justify-content: center;
@@ -460,6 +559,10 @@ const router = useRouter();
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
 
+.correct {
+  color:#3EBEEE
+}
+
 /* 오버레이 css  */
 .do {
   width: 110px;
@@ -543,4 +646,78 @@ const router = useRouter();
   justify-content: center;
   align-items: center;
 }
+
+
+.aiButton {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  color:#3EBEEE;
+  font-size: 50px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 20px;
+  box-sizing: border-box;
+  border-radius: 50%
+}
+.aiButton:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+
+.showAiAnswerModal {
+  position: absolute;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  
+  align-items: center;
+  
+  width: 600px;
+  height: 300px;
+  background-color: #eee;
+  top: 20%;
+  left: 50%;
+  z-index: 999;
+  margin-left: -80px;
+  border-radius: 9px;
+}
+
+.aiInfoDetail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.aiReason {
+  margin-top: 10px;
+}
+
+.aiButtonAnswer {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  border: 1px solid #ddd;
+  width: 50px;
+  height: 50px;
+  background-color: #3EBEEE;
+  font-size: 25px;
+  color: white;
+  border-radius: 50%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.aiButtonAnswer:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
 </style>
