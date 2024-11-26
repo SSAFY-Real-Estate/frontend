@@ -15,6 +15,7 @@ import {
 import { useRouter } from "vue-router";
 const corInfo = ref([]); // 좌표 data
 const map = ref();
+const pre = ref();
 const location = ref({
   // getLocation parameter
   swLat: 28.814718216888917,
@@ -43,7 +44,12 @@ const gLoction = () => {
     location.value,
     ({ data }) => {
       // 좌표 객체들을 position 배열로 묶어서 넣기
-      corInfo.value = data;
+      // 받아온 데이터에 isCheck: false 추가
+      corInfo.value = data.map((item) => ({
+        ...item, // 기존 속성들 유지
+        isCheck: false, // 새로운 속성 추가
+      }));
+      console.log(corInfo.value);
     },
 
     (error) => {
@@ -142,6 +148,11 @@ const focusInfo = ref({});
 const handleClick = (info) => {
   console.log("Clicked on:", info);
   focusInfo.value = info;
+  info.isCheck = true;
+  if (pre.value) {
+    pre.value.isCheck = false;
+  }
+  pre.value = info;
 };
 
 watch(() => {
@@ -196,7 +207,17 @@ const LevelGuard = () => {
     return true;
   }
 };
-
+const eventBuildingInfo = (info) => {
+  console.log("click");
+  if (map.value) {
+    map.value.panTo(new kakao.maps.LatLng(info.lat, info.lng));
+    info.isCheck = true;
+    if (pre.value) {
+      pre.value.isCheck = false;
+    }
+    pre.value = info;
+  }
+};
 onMounted(() => {
   getInfo();
   gDoLocation();
@@ -250,6 +271,7 @@ const router = useRouter();
           v-for="item in corInfo"
           :key="index"
           class="buildingInfo"
+          @click="eventBuildingInfo(item)"
         >
           <h1 class="aptName">{{ item.aptName }}</h1>
           <div class="address">
@@ -286,7 +308,12 @@ const router = useRouter();
             v-if="whatIsClass2(info)"
             @click="handleClick(info)"
           >
-            <div class="apt_py">{{ info.pyung }}평</div>
+            <div
+              :class="info.isCheck ? 'apt_py_click' : 'apt_py'"
+              @click="eventApt(info)"
+            >
+              {{ info.pyung }}평
+            </div>
             <div class="apt_price">{{ info.dealAmount }}억</div>
           </div>
           <div
@@ -464,6 +491,17 @@ const router = useRouter();
   justify-content: center;
   align-items: center;
   background-color: #3ebeee;
+  border-bottom: #3ebeee;
+  height: 50%;
+}
+.apt_py_click {
+  box-sizing: border-box;
+  font-size: 11px;
+  color: #3ebeee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
   border-bottom: #3ebeee;
   height: 50%;
 }
