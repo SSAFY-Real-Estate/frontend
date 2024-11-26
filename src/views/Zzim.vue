@@ -1,8 +1,8 @@
 <script setup>
 import { getHomes } from '@/apis/ai/ai';
+import { deleteZzimApi, getZzims } from '@/apis/zzim/zzim';
 import { usePrincipalStore } from '@/stores/principal';
-import { ref } from 'firebase/storage';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 
@@ -14,20 +14,49 @@ const user = computed(() => principalStore.user);
 const apartInfo = ref([]);
 
 const aiAnswer = ref(null);
+const aiButton = ref(false);
 
-const aiCommand = async() => {
+const zzimInfos = ref(null);
+
+const getZzimData = async() => {
     try {
-        const response = await getHomes(apartInfo);
-        console.log(response);
-        aiCommand.value = response;
+        const response = await getZzims(user.value.userId);
+        zzimInfos.value = response;
+        console.log(response)
     } catch (error) {
         
     }
 }
 
-onMounted(() => {
+
+const aiCommand = async() => {
+    if(window.confirm('ai 추천 서비스를 이용하시겠습니까?')) {
+        try {
+        const response = await getHomes(zzimInfos.value);
+        console.log(response);
+        aiAnswer.value = response.apart;
+        aiButton.value = true;
+        } catch (error) {       
+        }
+    }
+}
+
+const deleteZzim = async(item) => {
+    if(window.confirm("해당 찜 요소를 삭제하시겠습니까?")) {
+        try {
+            const response = await deleteZzimApi(item.lat, item.lng, user.value.userId);
+            alert('삭제가 완료되었습니다.');
+            getZzimData();
+        } catch (error) {
+            
+        }
+    }
+}
+
+onMounted(async() => {
     principalStore.fetchUser();
     console.log(user.value)
+    await getZzimData(user.value.userId)
 })
 
 </script>
@@ -41,98 +70,32 @@ onMounted(() => {
                 </div>
                 <h1>찜</h1>
             </div>
-            <div class="aiButton">
+            <div class="aiButton" @click="aiCommand">
                 <i class="fa-solid fa-robot"></i>
             </div>
         </div>
         <div class="zzimList">
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
-            </div>
-            <div class="zzimCard">
-                <div>aptName</div>
-                <div>address</div>
-                <div>category</div>
-                <div>priceAndPyung</div>
+            <div class="zzimCard" v-for="(item, index) in zzimInfos" :key="index">
+                <h1>{{ item.aptName }}</h1>
+                <div>{{ item.sidoName }} {{ item.gugunName }} {{ item.dongName }}</div>
+                <div>분류 : {{ item.className == "apt" ? "아파트" : "" }}</div>
+                <h2>{{ item.dealAmount }}억 ({{ item.pyung }}평)</h2>
+                <button @click="deleteZzim(item)" class="aiButtonAnswer"><i class="fa-solid fa-x"></i></button>
             </div>
         </div>
-        <div class="aiComment">
-            
+        <div class="aiComment" v-if="aiAnswer">
+            <div class="aiWrap">
+                <div class="aiTitle">
+                    <h1>AI 추천</h1>
+                    <i class="aiTitleLogo fa-solid fa-robot"></i>
+                </div>
+                <div class="aptName">{{ aiAnswer?.aptName }}</div>
+                <div class="address">{{ aiAnswer?.sidoName }} {{ aiAnswer?.gugunName }} {{ aiAnswer?.dongName }}</div>
+                <div class="category">분류 : {{ aiAnswer?.className == "apt" ? "아파트" : "" }}</div>
+                <div class="price">{{ aiAnswer?.dealAmount }}억  ({{ aiAnswer?.pyung }}평)</div>
+                <div class="reason">{{ aiAnswer?.reason }}</div>
+                <button @click="aiAnswer = null" class="aiCloseBtn"><i class="fa-solid fa-x"></i></button>
+            </div>
         </div>
     </div>
 </template>
@@ -178,12 +141,14 @@ onMounted(() => {
         overflow: auto;
     }
     .zzimCard {
+        position: relative;
         box-sizing: border-box;
         box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
         transition: all 0.3s cubic-bezier(.25,.8,.25,1);
         display: flex;
         justify-content: center;
         align-items: center;
+        gap: 10px;
         flex-direction: column;
         /* gap: 10px; */
         cursor: pointer;
@@ -198,10 +163,17 @@ onMounted(() => {
     }
 
     .aiComment {
-        width: 300px;
-        height: 200px;
+        width: 1200px;
+        height: 500px;
         border-radius: 9px;
         border: 1px solid #ddd;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: -250px;
+        margin-left: -600px;
+        z-index: 999999;
+        background-color: #eee;
     }
 
     .aiButton {
@@ -223,4 +195,65 @@ onMounted(() => {
     .aiButton:hover {
         box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     }
+
+    .aiButtonAnswer {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  border: 1px solid #ddd;
+  width: 35px;
+  height: 35px;
+  background-color: #3EBEEE;
+  font-size: 25px;
+  color: white;
+  border-radius: 50%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.aiButtonAnswer:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+.aiWrap {
+    position: relative;
+    box-sizing: border-box;
+    padding: 10px;
+}
+.aiTitle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    position: relative;
+}
+.aiTitleLogo {
+    margin-left: 10px;
+    font-size: 40px;
+    color: #3EBEEE;
+}
+.aiCloseBtn {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    border: 1px solid #ddd;
+    width: 35px;
+    height: 35px;
+    background-color: #3EBEEE;
+    font-size: 25px;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+.aiCloseBtn:hover {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
 </style>

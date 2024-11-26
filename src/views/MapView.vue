@@ -437,7 +437,7 @@ onMounted(async() => {
   </div>
   <div>{{ corInfo }}</div>
 </template>
-<style>
+<style scoped>
 #mapWrap {
   position: relative;
   display: flex;
