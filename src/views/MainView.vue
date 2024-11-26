@@ -59,7 +59,7 @@ const router = useRouter();
                     </div>
                 </div>
                 <div class="mainRightBottom">
-                    <div class="myList">
+                    <div class="myList" @click="router.push({name : 'zzim'})">
                         <h1>찜</h1>
                         <div class="myListBox">
                             <img src="../assets/myListLogo.png" alt="myListLogo">

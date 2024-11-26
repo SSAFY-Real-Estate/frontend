@@ -35,7 +35,9 @@ const regex = /^data:image\/.*$/;
     <!--like -->
     <div class="like">
       <div class="like_profile">
-        <div class="like_profile_picture"></div>
+        <div class="like_profile_picture">
+          <img v-if="item.profileImgUrl" :src="item.profileImgUrl" alt="">
+        </div>
         <div class="like_profile_by">by</div>
         <div class="like_profile_text">{{ item.id }}</div>
       </div>
@@ -65,6 +67,11 @@ const regex = /^data:image\/.*$/;
 .BoardCard:hover {
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
+.like_profile_picture > img  {
+  width: 100%;
+  height: 100%;
+}
+
 .like {
   padding: 10px;
   box-sizing: border-box;
