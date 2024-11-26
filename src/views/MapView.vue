@@ -141,7 +141,6 @@ const focusInfo = ref({});
 
 const handleClick = (info) => {
   console.log("Clicked on:", info);
-  alert(`Clicked on ${info.name || "an apartment"}`);
   focusInfo.value = info;
 };
 
@@ -187,6 +186,14 @@ const eventSigungu = (info) => {
     const level = map.value.getLevel();
     map.value.setLevel(5);
     map.value.setCenter(new kakao.maps.LatLng(info.lat, info.lng));
+  }
+};
+
+const LevelGuard = () => {
+  if (map.value) {
+    const level = map.value.getLevel();
+    if (level >= 3) return false;
+    return true;
   }
 };
 
@@ -238,9 +245,8 @@ const router = useRouter();
           </h2>
           <div class="heart"><i class="fa-solid fa-heart"></i></div>
         </div>
-
         <div
-          v-if="focusInfo.aptName"
+          v-if="LevelGuard()"
           v-for="item in corInfo"
           :key="index"
           class="buildingInfo"
